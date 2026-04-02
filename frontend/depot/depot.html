@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Déposer un Projet - WisShare</title>
+    <style>
+        /* 🔹 Fond et centrage */
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* 🔹 Container formulaire */
+        .form-container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            width: 350px;
+            text-align: center;
+        }
+
+        .form-container h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        /* 🔹 Champs texte */
+        .form-container input[type="text"],
+        .form-container textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-container input[type="text"]:focus,
+        .form-container textarea:focus {
+            border-color: #2bc48a;
+            outline: none;
+        }
+
+        textarea {
+            resize: none;
+            height: 100px;
+        }
+
+        /* 🔹 Bouton upload */
+        .upload-btn {
+            display: inline-block;
+            width: 100%;
+            padding: 12px;
+            background: #2bc48a;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-btn:hover {
+            background: #25a86f;
+        }
+
+        /* 🔹 Input type file invisible */
+        #fichier {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Déposer un Projet</h2>
+        <form action="upload.php" method="POST" enctype="multipart/form-data">
+            <input type="text" name="titre" placeholder="Titre du Projet" required>
+            <textarea name="description" placeholder="Description" required></textarea>
+
+            <!-- 🔹 Bouton custom pour upload -->
+            <label for="fichier" class="upload-btn" id="uploadLabel">Téléverser votre Fichier (PDF ou ZIP)</label>
+            <input type="file" name="fichier" id="fichier" accept=".pdf,.zip" required>
+
+            <input type="submit" value="Envoyer" class="upload-btn" style="margin-top:10px;">
+        </form>
+    </div>
+
+    <script>
+        // 🔹 Afficher nom du fichier sélectionné
+        const fichierInput = document.getElementById('fichier');
+        const uploadLabel = document.getElementById('uploadLabel');
+
+        fichierInput.addEventListener('change', function() {
+            if(this.files.length > 0){
+                uploadLabel.textContent = "Fichier sélectionné : " + this.files[0].name;
+            } else {
+                uploadLabel.textContent = "Téléverser votre Fichier (PDF ou ZIP)";
+            }
+        });
+    </script>
+</body>
+</html>
