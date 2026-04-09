@@ -3,106 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Déposer un Projet - WisShare</title>
+    <title>WisShare - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* 🔹 Fond et centrage */
+        :root {
+            --primary: #2bc48a;
+            --secondary: #6366f1; /* Pour le côté dégradé violet/bleu */
+            --bg: #f8fafc;
+            --white: #ffffff;
+            --text: #1e293b;
+        }
+
         body {
             margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f6f8;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+        }
+
+        /* --- NAVBAR --- */
+        nav {
+            background: var(--white);
+            padding: 10px 40px;
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            height: 100vh;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
-        /* 🔹 Container formulaire */
-        .form-container {
-            background: #fff;
+        .logo { font-size: 24px; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+
+        .nav-icons { display: flex; gap: 20px; align-items: center; font-size: 1.2rem; color: #64748b; }
+        .nav-icons i:hover { color: var(--primary); cursor: pointer; }
+
+        .search-bar {
+            background: #f1f5f9;
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            width: 300px;
+        }
+        .search-bar input { border: none; background: transparent; outline: none; margin-left: 10px; width: 100%; }
+
+        /* --- LAYOUT --- */
+        .main-container {
+            display: grid;
+            grid-template-columns: 250px 1fr 380px; /* Gauche (Filtres) | Milieu (Résultats) | Droite (Dépôt) */
+            gap: 25px;
             padding: 30px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .card { background: var(--white); padding: 25px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+
+        /* --- COLONNE GAUCHE (Filtres) --- */
+        .sidebar h3 { font-size: 1.1rem; margin-bottom: 20px; border-bottom: 2px solid var(--bg); padding-bottom: 10px; }
+        .filter-group { margin-bottom: 25px; }
+        .filter-group label { display: block; margin: 10px 0; font-size: 14px; cursor: pointer; }
+        .filter-group input { margin-right: 10px; accent-color: var(--primary); }
+
+        /* --- COLONNE MILIEU (Résultats) --- */
+        .feed-header { margin-bottom: 20px; font-weight: bold; font-size: 1.2rem; }
+        .project-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
             border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            width: 350px;
-            text-align: center;
-        }
-
-        .form-container h2 {
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        /* 🔹 Champs texte */
-        .form-container input[type="text"],
-        .form-container textarea {
-            width: 100%;
-            padding: 12px;
+            border: 1px solid #f1f5f9;
             margin-bottom: 15px;
-            border-radius: 10px;
-            border: 1px solid #ccc;
-            font-size: 14px;
-            transition: all 0.3s ease;
+            transition: 0.3s;
         }
+        .project-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-color: var(--primary); }
+        .project-icon { width: 50px; height: 50px; background: #ecfdf5; color: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
 
-        .form-container input[type="text"]:focus,
-        .form-container textarea:focus {
-            border-color: #2bc48a;
-            outline: none;
+        /* --- COLONNE DROITE (Dépôt) --- */
+        .upload-section h2 { font-size: 1.3rem; margin-bottom: 20px; text-align: center; }
+        input[type="text"], textarea, select {
+            width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; font-size: 14px; box-sizing: border-box;
         }
-
-        textarea {
-            resize: none;
-            height: 100px;
-        }
-
-        /* 🔹 Bouton upload */
-        .upload-btn {
-            display: inline-block;
-            width: 100%;
-            padding: 12px;
-            background: #2bc48a;
-            color: white;
-            font-size: 16px;
-            border: none;
-            border-radius: 10px;
+        
+        .btn-custom-upload {
+            border: 2px dashed #cbd5e1;
+            padding: 20px;
+            text-align: center;
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            margin-bottom: 15px;
+            display: block;
+            transition: 0.3s;
+            color: #64748b;
         }
+        .btn-custom-upload:hover { border-color: var(--primary); background: #f0fdf4; color: var(--primary); }
 
-        .upload-btn:hover {
-            background: #25a86f;
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--primary), #22c55e);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(43, 196, 138, 0.3);
         }
+        .btn-submit:hover { transform: scale(1.02); }
 
-        /* 🔹 Input type file invisible */
-        #fichier {
-            display: none;
-        }
+        #file-input { display: none; }
     </style>
 </head>
 <body>
-    <div class="form-container">
-        <h2>Déposer un Projet</h2>
-        <form action="upload.php" method="POST" enctype="multipart/form-data">
-            <input type="text" name="titre" placeholder="Titre du Projet" required>
-            <textarea name="description" placeholder="Description" required></textarea>
 
-            <!-- 🔹 Bouton custom pour upload -->
-            <label for="fichier" class="upload-btn" id="uploadLabel">Téléverser votre Fichier (PDF ou ZIP)</label>
-            <input type="file" name="fichier" id="fichier" accept=".pdf,.zip" required>
+    <nav>
+        <div class="logo"><i class="fas fa-share-nodes"></i> WisShare</div>
+        
+        <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Rechercher un projet...">
+        </div>
 
-            <input type="submit" value="Envoyer" class="upload-btn" style="margin-top:10px;">
-        </form>
+        <div class="nav-icons">
+            <i class="far fa-bell"></i>
+            <i class="far fa-comment-dots"></i>
+            <i class="far fa-user-circle"></i>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="card sidebar">
+            <h3>Filtres</h3>
+            <div class="filter-group">
+                <strong>Catégories</strong>
+                <label><input type="checkbox"> Application Web</label>
+                <label><input type="checkbox"> Application Mobile</label>
+                <label><input type="checkbox"> Design UI/UX</label>
+            </div>
+            <div class="filter-group">
+                <strong>Format</strong>
+                <label><input type="checkbox"> ZIP / RAR</label>
+                <label><input type="checkbox"> Google Drive</label>
+                <label><input type="checkbox"> PDF</label>
+            </div>
+            <div class="filter-group">
+                <strong>Année</strong>
+                <select>
+                    <option>2024</option>
+                    <option>2023</option>
+                    <option>2022</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="feed-header">Résultats récents</div>
+            
+            <div class="project-card">
+                <div class="project-icon"><i class="fas fa-file-zipper"></i></div>
+                <div>
+                    <div style="font-weight: bold;">E-commerce App v1.0</div>
+                    <div style="font-size: 12px; color: #64748b;">Déposé le 07/04/2026 • ZIP • Web</div>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="project-icon"><i class="fas fa-mobile-screen-button"></i></div>
+                <div>
+                    <div style="font-weight: bold;">Gestion de Bibliothèque</div>
+                    <div style="font-size: 12px; color: #64748b;">Déposé le 05/04/2026 • PDF • Mobile</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card upload-section">
+            <h2>Déposer un Projet</h2>
+            <form action="../../backend/depot/upload.php" method="POST" enctype="multipart/form-data">
+                <input type="text" name="titre" placeholder="Titre du projet" required>
+                <textarea name="description" placeholder="Description du projet..."></textarea>
+                
+                <select name="categorie">
+                    <option value="web">Application Web</option>
+                    <option value="mobile">Application Mobile</option>
+                </select>
+
+                <label for="file-input" class="btn-custom-upload" id="file-label">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; display: block; margin-bottom: 10px;"></i>
+                    <span>Cliquez pour choisir un fichier (PDF, ZIP)</span>
+                </label>
+                <input type="file" name="fichier" id="file-input" accept=".pdf,.zip" required>
+
+                <button type="submit" class="btn-submit">Publier sur WisShare</button>
+            </form>
+        </div>
     </div>
 
     <script>
-        // 🔹 Afficher nom du fichier sélectionné
-        const fichierInput = document.getElementById('fichier');
-        const uploadLabel = document.getElementById('uploadLabel');
+        // Affichage du nom de fichier
+        const fileInput = document.getElementById('file-input');
+        const fileLabel = document.getElementById('file-label');
 
-        fichierInput.addEventListener('change', function() {
-            if(this.files.length > 0){
-                uploadLabel.textContent = "Fichier sélectionné : " + this.files[0].name;
-            } else {
-                uploadLabel.textContent = "Téléverser votre Fichier (PDF ou ZIP)";
+        fileInput.addEventListener('change', function() {
+            if(this.files.length > 0) {
+                fileLabel.innerHTML = `<i class="fas fa-check-circle" style="color:var(--primary)"></i><br>${this.files[0].name}`;
+                fileLabel.style.borderColor = "var(--primary)";
             }
         });
     </script>
