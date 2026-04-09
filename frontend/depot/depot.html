@@ -1,110 +1,933 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Déposer un Projet - WisShare</title>
-    <style>
-        /* 🔹 Fond et centrage */
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f6f8;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WisShare · Espace projets collaboratifs</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap');
 
-        /* 🔹 Container formulaire */
-        .form-container {
-            background: #fff;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            width: 350px;
-            text-align: center;
-        }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        .form-container h2 {
-            margin-bottom: 20px;
-            color: #333;
-        }
+    body {
+      background: linear-gradient(145deg, #f6f9fc 0%, #eef2f7 100%);
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      color: #1a2c3e;
+    }
 
-        /* 🔹 Champs texte */
-        .form-container input[type="text"],
-        .form-container textarea {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border-radius: 10px;
-            border: 1px solid #ccc;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
+    /* ── HEADER ─────────────────────────────────────── */
+    .glass-header {
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(66,153,225,0.2);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+      padding: 0 40px;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
 
-        .form-container input[type="text"]:focus,
-        .form-container textarea:focus {
-            border-color: #2bc48a;
-            outline: none;
-        }
+    .logo-area { display: flex; align-items: center; gap: 12px; }
 
-        textarea {
-            resize: none;
-            height: 100px;
-        }
+    .logo-icon {
+      font-size: 28px;
+      background: linear-gradient(135deg,#1E6DFF,#3B82F6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
 
-        /* 🔹 Bouton upload */
-        .upload-btn {
-            display: inline-block;
-            width: 100%;
-            padding: 12px;
-            background: #2bc48a;
-            color: white;
-            font-size: 16px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+    .logo-text {
+      font-weight: 700;
+      font-size: 24px;
+      background: linear-gradient(135deg,#1E3A8A,#2563EB);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.3px;
+    }
 
-        .upload-btn:hover {
-            background: #25a86f;
-        }
+    .nav-links { display: flex; gap: 28px; align-items: center; }
 
-        /* 🔹 Input type file invisible */
-        #fichier {
-            display: none;
-        }
-    </style>
+    .nav-links a {
+      text-decoration: none;
+      font-weight: 500;
+      color: #2c3e50;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: 0.2s;
+    }
+
+    .nav-links a:hover { color: #1E6DFF; transform: translateY(-1px); }
+
+    /* Badge utilisateur connecté */
+    .user-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #e8f0fe;
+      padding: 6px 14px;
+      border-radius: 40px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #1E6DFF;
+    }
+
+    /* ── LAYOUT ─────────────────────────────────────── */
+    .dashboard {
+      max-width: 1600px;
+      margin: 32px auto;
+      padding: 0 28px;
+      display: grid;
+      grid-template-columns: 340px 1fr 360px;
+      gap: 28px;
+    }
+
+    /* ── CARTES ─────────────────────────────────────── */
+    .card {
+      background: rgba(255,255,255,0.96);
+      border-radius: 32px;
+      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.02);
+      border: 1px solid rgba(255,255,255,0.5);
+      overflow: hidden;
+    }
+
+    /* ── FORMULAIRE GAUCHE ──────────────────────────── */
+    .form-card { padding: 28px 24px; }
+
+    .form-card h3 {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      background: linear-gradient(120deg,#1E3A8A,#2563EB);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .form-sub {
+      font-size: 13px;
+      color: #5b6e8c;
+      margin-bottom: 28px;
+      border-left: 3px solid #3B82F6;
+      padding-left: 12px;
+    }
+
+    /* Alerte session */
+    .session-alert {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: 16px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #9a3412;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .session-alert a {
+      color: #1E6DFF;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .input-group { margin-bottom: 20px; }
+
+    .input-group label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 8px;
+      color: #1e2f44;
+    }
+
+    .input-group input,
+    .input-group textarea,
+    .input-group select {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 20px;
+      font-size: 14px;
+      font-family: inherit;
+      background: #fff;
+      transition: all 0.2s;
+    }
+
+    .input-group input:focus,
+    .input-group textarea:focus,
+    .input-group select:focus {
+      border-color: #3B82F6;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+    }
+
+    .file-zone {
+      border: 2px dashed #cbd5e1;
+      border-radius: 24px;
+      background: #fafcff;
+      padding: 18px 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .file-zone:hover { border-color: #3B82F6; background: #f0f7ff; }
+    .file-zone i { font-size: 28px; color: #3B82F6; margin-bottom: 8px; }
+
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(105deg,#1E6DFF,#3B82F6);
+      border: none;
+      padding: 14px;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 16px;
+      color: white;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-top: 8px;
+      box-shadow: 0 5px 12px rgba(30,109,255,0.25);
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 20px rgba(30,109,255,0.3);
+      background: linear-gradient(105deg,#0f5ae0,#2b6ef0);
+    }
+
+    .btn-submit:disabled {
+      background: #a0aec0;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* ── CENTRE ─────────────────────────────────────── */
+    .center-panel { display: flex; flex-direction: column; gap: 24px; }
+
+    .search-filter-bar {
+      background: white;
+      border-radius: 60px;
+      padding: 8px 12px 8px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.03);
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .search-wrapper {
+      flex: 2;
+      display: flex;
+      align-items: center;
+      background: #f1f5f9;
+      border-radius: 40px;
+      padding: 6px 16px;
+    }
+
+    .search-wrapper i { color: #6c86a3; margin-right: 10px; }
+
+    .search-wrapper input {
+      background: transparent;
+      border: none;
+      padding: 12px 0;
+      font-size: 15px;
+      width: 100%;
+      outline: none;
+    }
+
+    .filter-group { display: flex; gap: 12px; align-items: center; }
+
+    .filter-chip {
+      background: #f1f5f9;
+      padding: 8px 18px;
+      border-radius: 40px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #2c3e50;
+      user-select: none;
+    }
+
+    .filter-chip.active {
+      background: #1E6DFF;
+      color: white;
+      box-shadow: 0 4px 8px rgba(30,109,255,0.3);
+    }
+
+    .projects-list {
+      background: white;
+      border-radius: 28px;
+      padding: 16px 0;
+      max-height: 68vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.05);
+    }
+
+    .project-item {
+      padding: 20px 24px;
+      border-bottom: 1px solid #edf2f7;
+      transition: 0.2s;
+      cursor: pointer;
+    }
+
+    .project-item:last-child { border-bottom: none; }
+    .project-item:hover { background: #fafcff; transform: translateX(4px); }
+
+    .project-title {
+      font-weight: 700;
+      font-size: 17px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+      gap: 8px;
+    }
+
+    .badge-type {
+      font-size: 11px;
+      padding: 4px 12px;
+      border-radius: 50px;
+      font-weight: 600;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .badge-type.pdf { background: #fff0f0; color: #e53e3e; }
+    .badge-type.zip { background: #fffbeb; color: #d97706; }
+
+    .project-desc {
+      font-size: 13px;
+      color: #4a5b74;
+      margin: 6px 0;
+      line-height: 1.5;
+      display: -webkit-box;
+      
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .project-meta {
+      font-size: 12px;
+      color: #7c8ea0;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .empty-message {
+      padding: 50px 40px;
+      text-align: center;
+      color: #8ba0bc;
+      line-height: 2;
+    }
+
+    /* ── SIDEBAR DROITE ─────────────────────────────── */
+    .filters-sidebar { padding: 28px 22px; }
+
+    .filters-sidebar h4 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #0f2b3d;
+    }
+
+    .filter-option { margin-bottom: 24px; }
+
+    .filter-option > label {
+      font-weight: 600;
+      font-size: 14px;
+      display: block;
+      margin-bottom: 12px;
+      color: #1e2f44;
+    }
+
+    .radio-group { display: flex; gap: 20px; flex-wrap: wrap; }
+
+    .radio-group label {
+      font-weight: 400;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 28px;
+      border: 1.5px solid #e2e8f0;
+      background: white;
+      font-family: inherit;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* Statistiques sidebar */
+    .stats-box {
+      background: linear-gradient(135deg,#eef2ff,#e0e7ff);
+      border-radius: 20px;
+      padding: 16px;
+      margin-bottom: 24px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .stat-item { text-align: center; }
+
+    .stat-num {
+      font-size: 24px;
+      font-weight: 700;
+      color: #2563eb;
+      display: block;
+    }
+
+    .stat-label { font-size: 12px; color: #6b7280; }
+
+    .reset-filters {
+      background: none;
+      border: 1px solid #cbd5e1;
+      padding: 10px;
+      border-radius: 40px;
+      width: 100%;
+      font-weight: 500;
+      font-size: 14px;
+      margin-top: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+      font-family: inherit;
+    }
+
+    .reset-filters:hover { background: #f1f5f9; border-color: #3B82F6; }
+
+    /* Messages */
+    .message-local {
+      margin-top: 18px;
+      font-size: 13px;
+      text-align: center;
+      padding: 10px 14px;
+      border-radius: 40px;
+    }
+
+    .success { background: #e0f2e9; color: #11734c; }
+    .error   { background: #ffe6e5; color: #c23d2e; }
+
+    /* Scroll */
+    .projects-list::-webkit-scrollbar { width: 5px; }
+    .projects-list::-webkit-scrollbar-track { background: #eef2f8; border-radius: 10px; }
+    .projects-list::-webkit-scrollbar-thumb { background: #b9cadb; border-radius: 10px; }
+
+    /* Télécharger */
+    .btn-download {
+      background: #1E6DFF;
+      color: white;
+      border: none;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 500;
+      transition: 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-download:hover { background: #1558b0; }
+
+    @media (max-width: 1150px) {
+      .dashboard { grid-template-columns: 1fr; }
+      .form-card, .filters-sidebar { max-width: 600px; margin: 0 auto; width: 100%; }
+    }
+  </style>
 </head>
 <body>
-    <div class="form-container">
-        <h2>Déposer un Projet</h2>
-        <form action="upload.php" method="POST" enctype="multipart/form-data">
-            <input type="text" name="titre" placeholder="Titre du Projet" required>
-            <textarea name="description" placeholder="Description" required></textarea>
 
-            <!-- 🔹 Bouton custom pour upload -->
-            <label for="fichier" class="upload-btn" id="uploadLabel">Téléverser votre Fichier (PDF ou ZIP)</label>
-            <input type="file" name="fichier" id="fichier" accept=".pdf,.zip" required>
+<!-- ══ HEADER ══════════════════════════════════════════ -->
+<header class="glass-header">
+  <div class="logo-area">
+    <i class="fas fa-share-alt logo-icon"></i>
+    <span class="logo-text">WisShare</span>
+  </div>
+  <div class="nav-links">
+    <!-- Wissal : lien vers accueil.html -->
+    <a href="../explore/accueil.html"><i class="fas fa-compass"></i> Explorer</a>
+    <!-- Salma : badge si connecté, sinon lien login -->
+    <div id="navUser"></div>
+  </div>
+</header>
 
-            <input type="submit" value="Envoyer" class="upload-btn" style="margin-top:10px;">
-        </form>
+<!-- ══ MAIN ════════════════════════════════════════════ -->
+<main class="dashboard">
+
+  <!-- ── COLONNE GAUCHE : FORMULAIRE ──────────────────── -->
+  <div class="card form-card">
+    <h3><i class="fas fa-cloud-upload-alt"></i> Déposer un projet</h3>
+    <div class="form-sub">Partagez votre travail avec la communauté</div>
+
+    <!-- Alerte si non connecté -->
+    <div id="sessionAlert" class="session-alert" style="display:none;">
+      <i class="fas fa-exclamation-circle"></i>
+      <span>Vous devez être <a href="../auth/login.html">connecté</a> pour déposer un projet.</span>
     </div>
 
-    <script>
-        // 🔹 Afficher nom du fichier sélectionné
-        const fichierInput = document.getElementById('fichier');
-        const uploadLabel = document.getElementById('uploadLabel');
+    <div id="formMessage" class="message-local" style="display:none;"></div>
 
-        fichierInput.addEventListener('change', function() {
-            if(this.files.length > 0){
-                uploadLabel.textContent = "Fichier sélectionné : " + this.files[0].name;
-            } else {
-                uploadLabel.textContent = "Téléverser votre Fichier (PDF ou ZIP)";
-            }
-        });
-    </script>
+    <div class="input-group">
+      <label><i class="fas fa-heading"></i> Titre du projet *</label>
+      <input type="text" id="projetTitre" placeholder="ex: IA pour l'analyse documentaire">
+    </div>
+
+    <div class="input-group">
+      <label><i class="fas fa-align-left"></i> Description *</label>
+      <textarea id="projetDesc" rows="3"
+        placeholder="Décrivez les objectifs, stack technique..."></textarea>
+    </div>
+
+    <!-- Catégorie choisie par l'utilisateur -->
+    <div class="input-group">
+      <label><i class="fas fa-tag"></i> Catégorie *</label>
+      <select id="projetCategorie">
+        <option value="web">Développement Web</option>
+        <option value="ia"> Intelligence Artificielle</option>
+        <option value="mobile"> Mobile</option>
+        <option value="design">Design & UI/UX</option>
+        <option value="data"> Data Science</option>
+      </select>
+    </div>
+
+    <div class="input-group">
+      <label><i class="fas fa-file-alt"></i> Fichier (PDF/ZIP) *</label>
+      <div class="file-zone" onclick="document.getElementById('projetFile').click()">
+        <i class="fas fa-folder-open"></i>
+        <p style="margin-top:6px;">Cliquez pour importer</p>
+        <small style="color:#6c86a3;">PDF ou ZIP, max 10 Mo</small>
+        <input type="file" id="projetFile" accept=".pdf,.zip"
+          style="display:none;" onchange="updateFileName(this)">
+      </div>
+      <div id="fileNameDisplay"
+        style="font-size:12px;margin-top:8px;color:#2563eb;font-weight:500;"></div>
+    </div>
+
+    <button class="btn-submit" id="btnSubmit" onclick="soumettreProjet()">
+      <i class="fas fa-paper-plane"></i> Publier le projet
+    </button>
+  </div>
+
+  <!-- ── CENTRE : RECHERCHE + LISTE PROJETS ───────────── -->
+  <div class="center-panel">
+    <div class="search-filter-bar">
+      <div class="search-wrapper">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput"
+          placeholder="Rechercher par titre ou description...">
+      </div>
+      <div class="filter-group">
+        <div class="filter-chip active" data-type="all" id="filterAllBtn">
+          <i class="fas fa-layer-group"></i> Tous
+        </div>
+        <div class="filter-chip" data-type="pdf" id="filterPdfBtn">
+          <i class="fas fa-file-pdf"></i> PDF
+        </div>
+        <div class="filter-chip" data-type="zip" id="filterZipBtn">
+          <i class="fas fa-file-archive"></i> ZIP
+        </div>
+      </div>
+    </div>
+
+    <div class="projects-list" id="projectsContainer">
+      <div class="empty-message">
+        <i class="fas fa-spinner fa-pulse"></i><br>Chargement des projets...
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DROITE : FILTRES + STATS ─────────────────────── -->
+  <div class="card filters-sidebar">
+    <h4><i class="fas fa-sliders-h"></i> Filtres avancés</h4>
+
+    <!-- Statistiques (liaison avec Wissal) -->
+    <div class="stats-box" id="statsBox">
+      <div class="stat-item">
+        <span class="stat-num" id="statTotal">-</span>
+        <span class="stat-label">Projets total</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num" id="statPdf">-</span>
+        <span class="stat-label">PDF</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num" id="statZip">-</span>
+        <span class="stat-label">ZIP</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num" id="statUsers">-</span>
+        <span class="stat-label">Auteurs</span>
+      </div>
+    </div>
+
+    <div class="filter-option">
+      <label><i class="fas fa-tag"></i> Catégorie</label>
+      <select id="categorieSelect">
+        <option value="all">Toutes catégories</option>
+        <option value="web">🌐 Web</option>
+        <option value="ia">🤖 IA</option>
+        <option value="mobile">📱 Mobile</option>
+        <option value="design">🎨 Design</option>
+        <option value="data">📊 Data Science</option>
+      </select>
+    </div>
+
+    <div class="filter-option">
+      <label><i class="fas fa-file"></i> Type de fichier</label>
+      <div class="radio-group">
+        <label><input type="radio" name="typeFichier" value="all" checked> Tous</label>
+        <label><input type="radio" name="typeFichier" value="pdf"> PDF</label>
+        <label><input type="radio" name="typeFichier" value="zip"> ZIP</label>
+      </div>
+    </div>
+
+    <button class="reset-filters" id="resetFiltersBtn">
+      <i class="fas fa-undo-alt"></i> Réinitialiser les filtres
+    </button>
+  </div>
+
+</main>
+
+<script>
+// ════════════════════════════════════════════════════════
+//  CONFIGURATION
+// ════════════════════════════════════════════════════════
+const API_BASE = '../../backend/';
+
+// ════════════════════════════════════════════════════════
+//  ÉTAT GLOBAL
+// ════════════════════════════════════════════════════════
+let projets          = [];
+let currentSearch    = '';
+let currentQuickType = 'all';
+let currentCategorie = 'all';
+let currentRadioType = 'all';
+let utilisateurConnecte = null;   // { id, nom } — vient de la session Salma
+
+// ════════════════════════════════════════════════════════
+//  1. VÉRIFIER LA SESSION (liaison Salma → login.php)
+// ════════════════════════════════════════════════════════
+async function checkSession() {
+  try {
+    const res  = await fetch(`${API_BASE}auth/session.php`, { credentials: 'include' });
+    const data = await res.json();
+
+    if (data.connecte) {
+      utilisateurConnecte = { id: data.id, nom: data.nom };
+
+      // Afficher badge utilisateur dans le nav
+      document.getElementById('navUser').innerHTML = `
+        <div class="user-badge">
+          <i class="fas fa-user-circle"></i> ${escapeHtml(data.nom)}
+          <a href="${API_BASE}auth/logout.php" style="color:#e53e3e;margin-left:6px;font-size:12px;">
+            <i class="fas fa-sign-out-alt"></i>
+          </a>
+        </div>`;
+
+      document.getElementById('sessionAlert').style.display = 'none';
+      document.getElementById('btnSubmit').disabled = false;
+    } else {
+      // Non connecté
+      utilisateurConnecte = null;
+      document.getElementById('navUser').innerHTML =
+        `<a href="../auth/login.html"><i class="fas fa-user-circle"></i> Connexion</a>`;
+      document.getElementById('sessionAlert').style.display = 'flex';
+      document.getElementById('btnSubmit').disabled = true;
+    }
+  } catch (e) {
+    // Si session.php inaccessible, on laisse le bouton actif
+    document.getElementById('navUser').innerHTML =
+      `<a href="../auth/login.html"><i class="fas fa-user-circle"></i> Connexion</a>`;
+  }
+}
+
+// ════════════════════════════════════════════════════════
+//  2. CHARGER LES PROJETS depuis list.php (Inas backend)
+// ════════════════════════════════════════════════════════
+async function loadProjects() {
+  const container = document.getElementById('projectsContainer');
+  container.innerHTML =
+    `<div class="empty-message"><i class="fas fa-spinner fa-pulse"></i><br>Chargement...</div>`;
+
+  const params = new URLSearchParams();
+  if (currentSearch)              params.append('search',    currentSearch);
+  if (currentQuickType !== 'all') params.append('type',      currentQuickType);
+  if (currentCategorie !== 'all') params.append('categorie', currentCategorie);
+
+  try {
+    const res    = await fetch(`${API_BASE}projets/list.php?${params}`, { credentials: 'include' });
+    const result = await res.json();
+
+    if (result.success) {
+      projets = result.projets;
+      renderProjects();
+      updateStats();
+    } else {
+      container.innerHTML =
+        `<div class="empty-message"><i class="fas fa-exclamation-triangle"></i><br>${result.message}</div>`;
+    }
+  } catch (err) {
+    container.innerHTML =
+      `<div class="empty-message"><i class="fas fa-wifi"></i><br>Erreur de connexion au serveur.</div>`;
+  }
+}
+
+// ════════════════════════════════════════════════════════
+//  3. AFFICHER LES PROJETS
+// ════════════════════════════════════════════════════════
+function renderProjects() {
+  const container = document.getElementById('projectsContainer');
+
+  if (!projets || projets.length === 0) {
+    container.innerHTML = `
+      <div class="empty-message">
+        <i class="fas fa-folder-open" style="font-size:36px;margin-bottom:12px;display:block;"></i>
+        Aucun projet trouvé<br>
+        <span style="font-size:13px;">Soyez le premier à déposer !</span>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = projets.map(p => `
+    <div class="project-item">
+      <div class="project-title">
+        <span>${escapeHtml(p.titre)}</span>
+        <span class="badge-type ${p.type_fichier}">
+          <i class="fas fa-file-${p.type_fichier === 'pdf' ? 'pdf' : 'archive'}"></i>
+          ${p.type_fichier.toUpperCase()}
+        </span>
+      </div>
+      <div class="project-desc">${escapeHtml(p.description)}</div>
+      <div class="project-meta">
+        <span><i class="fas fa-calendar-alt"></i> ${p.date_depot}</span>
+        <span><i class="fas fa-tag"></i> ${getCategorieLabel(p.categorie)}</span>
+        <span><i class="fas fa-user"></i> ${escapeHtml(p.auteur || 'Anonyme')}</span>
+        <a class="btn-download"
+           href="${API_BASE}projets/download.php?id=${p.id}"
+           target="_blank">
+          <i class="fas fa-download"></i> Télécharger
+        </a>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ════════════════════════════════════════════════════════
+//  4. STATISTIQUES (sidebar droite — liaison avec Wissal)
+// ════════════════════════════════════════════════════════
+function updateStats() {
+  document.getElementById('statTotal').textContent = projets.length;
+  document.getElementById('statPdf').textContent   = projets.filter(p => p.type_fichier === 'pdf').length;
+  document.getElementById('statZip').textContent   = projets.filter(p => p.type_fichier === 'zip').length;
+  // Auteurs uniques
+  const auteurs = new Set(projets.map(p => p.auteur));
+  document.getElementById('statUsers').textContent = auteurs.size;
+}
+
+// ════════════════════════════════════════════════════════
+//  5. SOUMETTRE UN PROJET → upload.php
+// ════════════════════════════════════════════════════════
+window.soumettreProjet = async function() {
+  const titre       = document.getElementById('projetTitre').value.trim();
+  const description = document.getElementById('projetDesc').value.trim();
+  const categorie   = document.getElementById('projetCategorie').value;
+  const fileInput   = document.getElementById('projetFile');
+  const file        = fileInput.files[0];
+  const msgDiv      = document.getElementById('formMessage');
+
+  // Afficher le message
+  const showMsg = (text, type) => {
+    msgDiv.textContent  = text;
+    msgDiv.className    = `message-local ${type}`;
+    msgDiv.style.display = 'block';
+  };
+
+  // Validations front
+  if (!titre || !description || !file) {
+    showMsg('⚠️ Veuillez remplir tous les champs et joindre un fichier.', 'error');
+    return;
+  }
+
+  const ext = file.name.split('.').pop().toLowerCase();
+  if (!['pdf','zip'].includes(ext)) {
+    showMsg('❌ Format non accepté (PDF ou ZIP uniquement).', 'error');
+    return;
+  }
+
+  if (file.size > 10 * 1024 * 1024) {
+    showMsg('❌ Fichier trop volumineux (max 10 Mo).', 'error');
+    return;
+  }
+
+  // Désactiver le bouton pendant l'envoi
+  const btn = document.getElementById('btnSubmit');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
+
+  const formData = new FormData();
+  formData.append('titre',       titre);
+  formData.append('description', description);
+  formData.append('categorie',   categorie);
+  formData.append('fichier',     file);
+
+  try {
+    const res    = await fetch(`${API_BASE}depot/upload.php`, {
+      method: 'POST',
+      body: formData,
+      credentials: 'include'   // ← envoie le cookie de session Salma
+    });
+    const result = await res.json();
+
+    if (result.success) {
+      showMsg('✅ Projet déposé avec succès !', 'success');
+      // Réinitialiser le formulaire
+      document.getElementById('projetTitre').value = '';
+      document.getElementById('projetDesc').value  = '';
+      fileInput.value = '';
+      document.getElementById('fileNameDisplay').innerHTML = '';
+      // Recharger la liste
+      await loadProjects();
+      setTimeout(() => { msgDiv.style.display = 'none'; }, 3000);
+    } else {
+      showMsg('❌ ' + result.message, 'error');
+    }
+  } catch (err) {
+    showMsg('❌ Erreur de connexion au serveur.', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Publier le projet';
+  }
+};
+
+// ════════════════════════════════════════════════════════
+//  6. FILTRES & ÉVÉNEMENTS
+// ════════════════════════════════════════════════════════
+function applyFilters() {
+  // Sync chips
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.classList.toggle('active', chip.getAttribute('data-type') === currentQuickType);
+  });
+  loadProjects();
+}
+
+function bindEvents() {
+  // Recherche
+  document.getElementById('searchInput').addEventListener('input', e => {
+    currentSearch = e.target.value;
+    loadProjects();
+  });
+
+  // Chips rapides (type fichier)
+  document.getElementById('filterAllBtn').addEventListener('click', () => {
+    currentQuickType = 'all';
+    syncRadio('all');
+    applyFilters();
+  });
+  document.getElementById('filterPdfBtn').addEventListener('click', () => {
+    currentQuickType = 'pdf';
+    syncRadio('pdf');
+    applyFilters();
+  });
+  document.getElementById('filterZipBtn').addEventListener('click', () => {
+    currentQuickType = 'zip';
+    syncRadio('zip');
+    applyFilters();
+  });
+
+  // Radios sidebar
+  document.querySelectorAll('input[name="typeFichier"]').forEach(r => {
+    r.addEventListener('change', e => {
+      currentQuickType = e.target.value;
+      applyFilters();
+    });
+  });
+
+  // Select catégorie
+  document.getElementById('categorieSelect').addEventListener('change', e => {
+    currentCategorie = e.target.value;
+    loadProjects();
+  });
+
+  // Reset
+  document.getElementById('resetFiltersBtn').addEventListener('click', () => {
+    currentSearch    = '';
+    currentQuickType = 'all';
+    currentCategorie = 'all';
+    document.getElementById('searchInput').value     = '';
+    document.getElementById('categorieSelect').value = 'all';
+    syncRadio('all');
+    applyFilters();
+  });
+}
+
+function syncRadio(val) {
+  const r = document.querySelector(`input[name="typeFichier"][value="${val}"]`);
+  if (r) r.checked = true;
+}
+
+// ════════════════════════════════════════════════════════
+//  UTILITAIRES
+// ════════════════════════════════════════════════════════
+function getCategorieLabel(cat) {
+  const map = { web:'🌐 Web', ia:'🤖 IA', mobile:'📱 Mobile', design:'🎨 Design', data:'📊 Data' };
+  return map[cat] || '📁 Général';
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/[&<>]/g, m =>
+    ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])
+  );
+}
+
+window.updateFileName = function(input) {
+  const name = input.files[0]?.name || '';
+  document.getElementById('fileNameDisplay').innerHTML =
+    name ? `<i class="fas fa-check-circle"></i> ${escapeHtml(name)}` : '';
+};
+
+// ════════════════════════════════════════════════════════
+//  INITIALISATION
+// ════════════════════════════════════════════════════════
+(async () => {
+  await checkSession();   // liaison Salma
+  await loadProjects();   // liaison BDD Inas
+  bindEvents();
+})();
+</script>
+
 </body>
 </html>
