@@ -1,17 +1,35 @@
 <?php
-// Vérifie si le formulaire est soumis
+include "../db.php";
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    echo "<h2>Données reçues :</h2>";
-    echo "Titre : " . $_POST['titre'] . "<br>";
-    echo "Description : " . $_POST['description'] . "<br>";
+
+    $titre = $_POST['titre'];
+    $description = $_POST['description'];
 
     if (isset($_FILES['fichier'])) {
-        echo "Nom du fichier : " . $_FILES['fichier']['name'] . "<br>";
-        echo "Type : " . $_FILES['fichier']['type'] . "<br>";
-        echo "Taille : " . $_FILES['fichier']['size'] . " octets<br>";
+
+        $fileName = $_FILES['fichier']['name'];
+        $tmpName = $_FILES['fichier']['tmp_name'];
+
+        $uploadPath = "../../uploads/" . $fileName;
+
+        // déplacer fichier
+        move_uploaded_file($tmpName, $uploadPath);
+
+        // enregistrer dans la base
+        $sql = "INSERT INTO projects (title, description, file_path)
+                VALUES ('$titre', '$description', '$uploadPath')";
+
+        if ($conn->query($sql)) {
+            echo "Upload réussi ✔";
+        } else {
+            echo "Erreur: " . $conn->error;
+        }
+
     } else {
         echo "Aucun fichier reçu.";
     }
+
 } else {
     echo "Formulaire non soumis.";
 }
