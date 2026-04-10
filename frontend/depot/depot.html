@@ -625,7 +625,7 @@
 // ════════════════════════════════════════════════════════
 //  CONFIGURATION
 // ════════════════════════════════════════════════════════
-const API_BASE = '../../backend/';
+const API_BASE = '/Wisshare/backend/';
 
 // ════════════════════════════════════════════════════════
 //  ÉTAT GLOBAL
@@ -642,7 +642,11 @@ let utilisateurConnecte = null;   // { id, nom } — vient de la session Salma
 // ════════════════════════════════════════════════════════
 async function checkSession() {
   try {
-    const res  = await fetch(`${API_BASE}auth/session.php`, { credentials: 'include' });
+    const res = await fetch(`${API_BASE}depot/upload.php`, {
+    method: 'POST',
+    body: formData,
+    credentials: 'include'  // ← OBLIGATOIRE pour envoyer le cookie session
+});
     const data = await res.json();
 
     if (data.connecte) {

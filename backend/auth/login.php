@@ -1,4 +1,7 @@
 <?php
+ini_set('session.cookie_path', '/');
+ini_set('session.cookie_domain', 'localhost');
+session_name('PHPSESSID');
 session_start();
 header('Content-Type: application/json');
 

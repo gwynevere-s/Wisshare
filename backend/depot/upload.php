@@ -1,15 +1,13 @@
-<?php
+<?
+ini_set('session.cookie_path', '/');
 session_start();
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Credentials: true');
 
-// Pour les tests - À SUPPRIMER EN PRODUCTION
-if (!isset($_SESSION['utilisateur_id'])) {
-    // Créer un utilisateur de test si la table est vide
-    $_SESSION['utilisateur_id'] = 1;
-    $_SESSION['utilisateur_nom'] = 'Test User';
-}
+// Activation des erreurs pour déboguer
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 // Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['utilisateur_id'])) {
@@ -88,7 +86,7 @@ if ($fichier['size'] > $maxSize) {
 }
 
 // Sauvegarder le fichier
-$uploadDir = __DIR__ . '/../uploads/projets/';
+$uploadDir = __DIR__ . '/../../uploads/projets/';
 if (!is_dir($uploadDir)) {
     mkdir($uploadDir, 0755, true);
 }
