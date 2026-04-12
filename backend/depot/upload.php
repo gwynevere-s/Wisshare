@@ -1,13 +1,16 @@
-<?
+<?php
 ini_set('session.cookie_path', '/');
+session_name('PHPSESSID');
 session_start();
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Origin: http://localhost');
 header('Access-Control-Allow-Credentials: true');
+header('Access-Control-Allow-Methods: POST, OPTIONS');
 
-// Activation des erreurs pour déboguer
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
 
 // Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['utilisateur_id'])) {
@@ -18,17 +21,18 @@ if (!isset($_SESSION['utilisateur_id'])) {
     exit;
 }
 
-// ── Connexion BDD ───────────────────────────────────────
-$host    = 'localhost';
-$db      = 'wisshare';
-$user    = 'root';
-$pass    = '';
+// Connexion BDD
+$host = 'localhost';
+$db = 'wisshare';
+$user = 'root';
+$pass = '';
 $charset = 'utf8mb4';
 
 try {
     $pdo = new PDO(
         "mysql:host=$host;dbname=$db;charset=$charset",
-        $user, $pass,
+        $user,
+        $pass,
         [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
     );
 } catch (PDOException $e) {
@@ -43,9 +47,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // Récupérer et valider les champs
-$titre       = trim($_POST['titre'] ?? '');
+$titre = trim($_POST['titre'] ?? '');
 $description = trim($_POST['description'] ?? '');
-$categorie   = trim($_POST['categorie'] ?? 'web');
+$categorie = trim($_POST['categorie'] ?? 'web');
 
 if (empty($titre) || empty($description)) {
     echo json_encode([
@@ -110,11 +114,11 @@ try {
     ");
 
     $stmt->execute([
-        ':titre'          => $titre,
-        ':description'    => $description,
-        ':fichier'        => $newFileName,
-        ':categorie'      => $categorie,
-        ':type_fichier'   => $ext,
+        ':titre' => $titre,
+        ':description' => $description,
+        ':fichier' => $newFileName,
+        ':categorie' => $categorie,
+        ':type_fichier' => $ext,
         ':utilisateur_id' => $_SESSION['utilisateur_id']
     ]);
 
@@ -123,7 +127,6 @@ try {
         'message' => 'Projet déposé avec succès !',
         'projet_id' => $pdo->lastInsertId()
     ]);
-
 } catch (PDOException $e) {
     // Supprimer le fichier si l'insertion échoue
     if (file_exists($destination)) {

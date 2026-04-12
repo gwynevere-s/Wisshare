@@ -1,58 +1,43 @@
 <?php
-ini_set('session.cookie_path', '/');
 session_start();
 header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: http://localhost');
+header('Access-Control-Allow-Credentials: true');
 
-$host = 'localhost'; $db = 'wisshare';
-$user = 'root';      $pass = '';
-
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8mb4",
-        $user, $pass, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-} catch (PDOException $e) {
-    echo json_encode(['success'=>false,'message'=>'Erreur BDD: '.$e->getMessage()]);
-    exit;
-}
-
-$search    = trim($_GET['search']    ?? '');
-$type      = trim($_GET['type']      ?? 'all');
-$categorie = trim($_GET['categorie'] ?? 'all');
-
-$conditions = [];
-$params     = [];
-
-if ($search !== '') {
-    $conditions[] = "(p.titre LIKE :search OR p.description LIKE :search)";
-    $params[':search'] = '%'.$search.'%';
-}
-if ($type !== 'all' && in_array($type, ['pdf','zip'])) {
-    $conditions[] = "p.type_fichier = :type";
-    $params[':type'] = $type;
-}
-if ($categorie !== 'all' && in_array($categorie, ['web','ia','mobile','design','data'])) {
-    $conditions[] = "p.categorie = :categorie";
-    $params[':categorie'] = $categorie;
-}
-
-$where = count($conditions) ? 'WHERE '.implode(' AND ', $conditions) : '';
+$host = 'localhost';
+$db = 'wisshare';
+$user = 'root';
+$pass = '';
 
 try {
-    $stmt = $pdo->prepare("
-        SELECT p.id, p.titre, p.description, p.fichier,
-               p.categorie, p.type_fichier,
-               DATE_FORMAT(p.date_depot, '%Y-%m-%d') AS date_depot,
-               u.nom AS auteur
-        FROM projets p
-        JOIN utilisateurs u ON p.utilisateur_id = u.id
-        $where
-        ORDER BY p.date_depot DESC
-        LIMIT 100
-    ");
-    $stmt->execute($params);
+    $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8mb4", $user, $pass);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+    $sql = "SELECT p.*, u.nom as auteur_nom 
+            FROM projets p 
+            LEFT JOIN utilisateurs u ON p.utilisateur_id = u.id 
+            ORDER BY p.date_depot DESC";
+    
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
     $projets = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    echo json_encode(['success'=>true, 'projets'=>$projets]);
+    
+    // Formater les données pour le frontend
+    $formatted = [];
+    foreach ($projets as $projet) {
+        $formatted[] = [
+            'id' => $projet['id'],
+            'titre' => $projet['titre'],
+            'description' => $projet['description'],
+            'type_fichier' => $projet['type_fichier'],
+            'categorie' => $projet['categorie'],
+            'date_depot' => $projet['date_depot'],
+            'auteur' => $projet['auteur_nom'] ?? 'Anonyme'
+        ];
+    }
+    
+    echo json_encode(['success' => true, 'projets' => $formatted]);
 } catch (PDOException $e) {
-    echo json_encode(['success'=>false,'message'=>'Erreur requête: '.$e->getMessage()]);
+    echo json_encode(['success' => false, 'message' => 'Erreur: ' . $e->getMessage()]);
 }
 ?>

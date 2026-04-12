@@ -630,306 +630,308 @@ const API_BASE = '/Wisshare/backend/';
 // ════════════════════════════════════════════════════════
 //  ÉTAT GLOBAL
 // ════════════════════════════════════════════════════════
-let projets          = [];
-let currentSearch    = '';
+let projets = [];
+let currentSearch = '';
 let currentQuickType = 'all';
 let currentCategorie = 'all';
 let currentRadioType = 'all';
-let utilisateurConnecte = null;   // { id, nom } — vient de la session Salma
+let utilisateurConnecte = null;
 
 // ════════════════════════════════════════════════════════
-//  1. VÉRIFIER LA SESSION (liaison Salma → login.php)
+//  1. VÉRIFIER LA SESSION
 // ════════════════════════════════════════════════════════
 async function checkSession() {
-  try {
-    const res = await fetch(`${API_BASE}depot/upload.php`, {
-    method: 'POST',
-    body: formData,
-    credentials: 'include'  // ← OBLIGATOIRE pour envoyer le cookie session
-});
-    const data = await res.json();
+    try {
+        const res = await fetch(`${API_BASE}auth/check-session.php`, {
+            credentials: 'include'
+        });
+        const data = await res.json();
 
-    if (data.connecte) {
-      utilisateurConnecte = { id: data.id, nom: data.nom };
-
-      // Afficher badge utilisateur dans le nav
-      document.getElementById('navUser').innerHTML = `
-        <div class="user-badge">
-          <i class="fas fa-user-circle"></i> ${escapeHtml(data.nom)}
-          <a href="${API_BASE}auth/logout.php" style="color:#e53e3e;margin-left:6px;font-size:12px;">
-            <i class="fas fa-sign-out-alt"></i>
-          </a>
-        </div>`;
-
-      document.getElementById('sessionAlert').style.display = 'none';
-      document.getElementById('btnSubmit').disabled = false;
-    } else {
-      // Non connecté
-      utilisateurConnecte = null;
-      document.getElementById('navUser').innerHTML =
-        `<a href="../auth/login.html"><i class="fas fa-user-circle"></i> Connexion</a>`;
-      document.getElementById('sessionAlert').style.display = 'flex';
-      document.getElementById('btnSubmit').disabled = true;
+        if (data.connecte) {
+            utilisateurConnecte = { id: data.id, nom: data.nom };
+            
+            document.getElementById('navUser').innerHTML = `
+                <div class="user-badge">
+                    <i class="fas fa-user-circle"></i> ${escapeHtml(data.nom)}
+                    <a href="${API_BASE}auth/logout.php" style="color:#e53e3e;margin-left:6px;font-size:12px;">
+                        <i class="fas fa-sign-out-alt"></i> Déconnexion
+                    </a>
+                </div>`;
+            
+            document.getElementById('sessionAlert').style.display = 'none';
+            document.getElementById('btnSubmit').disabled = false;
+        } else {
+            utilisateurConnecte = null;
+            document.getElementById('navUser').innerHTML = 
+                `<a href="../auth/login.html"><i class="fas fa-user-circle"></i> Connexion</a>`;
+            document.getElementById('sessionAlert').style.display = 'flex';
+            document.getElementById('btnSubmit').disabled = true;
+        }
+    } catch (e) {
+        console.error('Erreur checkSession:', e);
+        document.getElementById('navUser').innerHTML = 
+            `<a href="../auth/login.html"><i class="fas fa-user-circle"></i> Connexion</a>`;
     }
-  } catch (e) {
-    // Si session.php inaccessible, on laisse le bouton actif
-    document.getElementById('navUser').innerHTML =
-      `<a href="../auth/login.html"><i class="fas fa-user-circle"></i> Connexion</a>`;
-  }
 }
 
 // ════════════════════════════════════════════════════════
-//  2. CHARGER LES PROJETS depuis list.php (Inas backend)
+//  2. CHARGER LES PROJETS
 // ════════════════════════════════════════════════════════
 async function loadProjects() {
-  const container = document.getElementById('projectsContainer');
-  container.innerHTML =
-    `<div class="empty-message"><i class="fas fa-spinner fa-pulse"></i><br>Chargement...</div>`;
+    const container = document.getElementById('projectsContainer');
+    container.innerHTML = `<div class="empty-message"><i class="fas fa-spinner fa-pulse"></i><br>Chargement...</div>`;
 
-  const params = new URLSearchParams();
-  if (currentSearch)              params.append('search',    currentSearch);
-  if (currentQuickType !== 'all') params.append('type',      currentQuickType);
-  if (currentCategorie !== 'all') params.append('categorie', currentCategorie);
+    try {
+        const res = await fetch(`${API_BASE}projets/list.php`, {
+            credentials: 'include'
+        });
+        const result = await res.json();
 
-  try {
-    const res    = await fetch(`${API_BASE}projets/list.php?${params}`, { credentials: 'include' });
-    const result = await res.json();
-
-    if (result.success) {
-      projets = result.projets;
-      renderProjects();
-      updateStats();
-    } else {
-      container.innerHTML =
-        `<div class="empty-message"><i class="fas fa-exclamation-triangle"></i><br>${result.message}</div>`;
+        if (result.success) {
+            projets = result.projets;
+            // Appliquer les filtres côté client
+            let filtered = projets;
+            
+            // Filtre par type de fichier
+            if (currentQuickType !== 'all') {
+                filtered = filtered.filter(p => p.type_fichier === currentQuickType);
+            }
+            
+            // Filtre par catégorie
+            if (currentCategorie !== 'all') {
+                filtered = filtered.filter(p => p.categorie === currentCategorie);
+            }
+            
+            // Filtre par recherche
+            if (currentSearch) {
+                filtered = filtered.filter(p => 
+                    p.titre.toLowerCase().includes(currentSearch.toLowerCase()) ||
+                    p.description.toLowerCase().includes(currentSearch.toLowerCase())
+                );
+            }
+            
+            renderProjects(filtered);
+            updateStats(filtered);
+        } else {
+            container.innerHTML = `<div class="empty-message"><i class="fas fa-exclamation-triangle"></i><br>${result.message}</div>`;
+        }
+    } catch (err) {
+        console.error('Erreur loadProjects:', err);
+        container.innerHTML = `<div class="empty-message"><i class="fas fa-wifi"></i><br>Erreur de connexion au serveur.</div>`;
     }
-  } catch (err) {
-    container.innerHTML =
-      `<div class="empty-message"><i class="fas fa-wifi"></i><br>Erreur de connexion au serveur.</div>`;
-  }
 }
 
 // ════════════════════════════════════════════════════════
 //  3. AFFICHER LES PROJETS
 // ════════════════════════════════════════════════════════
-function renderProjects() {
-  const container = document.getElementById('projectsContainer');
+function renderProjects(projetsList) {
+    const container = document.getElementById('projectsContainer');
 
-  if (!projets || projets.length === 0) {
-    container.innerHTML = `
-      <div class="empty-message">
-        <i class="fas fa-folder-open" style="font-size:36px;margin-bottom:12px;display:block;"></i>
-        Aucun projet trouvé<br>
-        <span style="font-size:13px;">Soyez le premier à déposer !</span>
-      </div>`;
-    return;
-  }
+    if (!projetsList || projetsList.length === 0) {
+        container.innerHTML = `
+            <div class="empty-message">
+                <i class="fas fa-folder-open" style="font-size:36px;margin-bottom:12px;display:block;"></i>
+                Aucun projet trouvé<br>
+                <span style="font-size:13px;">Soyez le premier à déposer !</span>
+            </div>`;
+        return;
+    }
 
-  container.innerHTML = projets.map(p => `
-    <div class="project-item">
-      <div class="project-title">
-        <span>${escapeHtml(p.titre)}</span>
-        <span class="badge-type ${p.type_fichier}">
-          <i class="fas fa-file-${p.type_fichier === 'pdf' ? 'pdf' : 'archive'}"></i>
-          ${p.type_fichier.toUpperCase()}
-        </span>
-      </div>
-      <div class="project-desc">${escapeHtml(p.description)}</div>
-      <div class="project-meta">
-        <span><i class="fas fa-calendar-alt"></i> ${p.date_depot}</span>
-        <span><i class="fas fa-tag"></i> ${getCategorieLabel(p.categorie)}</span>
-        <span><i class="fas fa-user"></i> ${escapeHtml(p.auteur || 'Anonyme')}</span>
-        <a class="btn-download"
-           href="${API_BASE}projets/download.php?id=${p.id}"
-           target="_blank">
-          <i class="fas fa-download"></i> Télécharger
-        </a>
-      </div>
-    </div>
-  `).join('');
+    container.innerHTML = projetsList.map(p => `
+        <div class="project-item">
+            <div class="project-title">
+                <span>${escapeHtml(p.titre)}</span>
+                <span class="badge-type ${p.type_fichier}">
+                    <i class="fas fa-file-${p.type_fichier === 'pdf' ? 'pdf' : 'archive'}"></i>
+                    ${p.type_fichier.toUpperCase()}
+                </span>
+            </div>
+            <div class="project-desc">${escapeHtml(p.description)}</div>
+            <div class="project-meta">
+                <span><i class="fas fa-calendar-alt"></i> ${p.date_depot}</span>
+                <span><i class="fas fa-tag"></i> ${getCategorieLabel(p.categorie)}</span>
+                <span><i class="fas fa-user"></i> ${escapeHtml(p.auteur || 'Anonyme')}</span>
+                <a class="btn-download"
+                   href="${API_BASE}projets/download.php?id=${p.id}"
+                   target="_blank">
+                  <i class="fas fa-download"></i> Télécharger
+                </a>
+            </div>
+        </div>
+    `).join('');
 }
 
 // ════════════════════════════════════════════════════════
-//  4. STATISTIQUES (sidebar droite — liaison avec Wissal)
+//  4. STATISTIQUES
 // ════════════════════════════════════════════════════════
-function updateStats() {
-  document.getElementById('statTotal').textContent = projets.length;
-  document.getElementById('statPdf').textContent   = projets.filter(p => p.type_fichier === 'pdf').length;
-  document.getElementById('statZip').textContent   = projets.filter(p => p.type_fichier === 'zip').length;
-  // Auteurs uniques
-  const auteurs = new Set(projets.map(p => p.auteur));
-  document.getElementById('statUsers').textContent = auteurs.size;
+function updateStats(projetsList) {
+    document.getElementById('statTotal').textContent = projetsList.length;
+    document.getElementById('statPdf').textContent = projetsList.filter(p => p.type_fichier === 'pdf').length;
+    document.getElementById('statZip').textContent = projetsList.filter(p => p.type_fichier === 'zip').length;
+    const auteurs = new Set(projetsList.map(p => p.auteur));
+    document.getElementById('statUsers').textContent = auteurs.size;
 }
 
 // ════════════════════════════════════════════════════════
-//  5. SOUMETTRE UN PROJET → upload.php
+//  5. SOUMETTRE UN PROJET
 // ════════════════════════════════════════════════════════
 window.soumettreProjet = async function() {
-  const titre       = document.getElementById('projetTitre').value.trim();
-  const description = document.getElementById('projetDesc').value.trim();
-  const categorie   = document.getElementById('projetCategorie').value;
-  const fileInput   = document.getElementById('projetFile');
-  const file        = fileInput.files[0];
-  const msgDiv      = document.getElementById('formMessage');
+    const titre = document.getElementById('projetTitre').value.trim();
+    const description = document.getElementById('projetDesc').value.trim();
+    const categorie = document.getElementById('projetCategorie').value;
+    const fileInput = document.getElementById('projetFile');
+    const file = fileInput.files[0];
+    const msgDiv = document.getElementById('formMessage');
 
-  // Afficher le message
-  const showMsg = (text, type) => {
-    msgDiv.textContent  = text;
-    msgDiv.className    = `message-local ${type}`;
-    msgDiv.style.display = 'block';
-  };
+    const showMsg = (text, type) => {
+        msgDiv.textContent = text;
+        msgDiv.className = `message-local ${type}`;
+        msgDiv.style.display = 'block';
+    };
 
-  // Validations front
-  if (!titre || !description || !file) {
-    showMsg('⚠️ Veuillez remplir tous les champs et joindre un fichier.', 'error');
-    return;
-  }
-
-  const ext = file.name.split('.').pop().toLowerCase();
-  if (!['pdf','zip'].includes(ext)) {
-    showMsg('❌ Format non accepté (PDF ou ZIP uniquement).', 'error');
-    return;
-  }
-
-  if (file.size > 10 * 1024 * 1024) {
-    showMsg('❌ Fichier trop volumineux (max 10 Mo).', 'error');
-    return;
-  }
-
-  // Désactiver le bouton pendant l'envoi
-  const btn = document.getElementById('btnSubmit');
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
-
-  const formData = new FormData();
-  formData.append('titre',       titre);
-  formData.append('description', description);
-  formData.append('categorie',   categorie);
-  formData.append('fichier',     file);
-
-  try {
-    const res    = await fetch(`${API_BASE}depot/upload.php`, {
-      method: 'POST',
-      body: formData,
-      credentials: 'include'   // ← envoie le cookie de session Salma
-    });
-    const result = await res.json();
-
-    if (result.success) {
-      showMsg('✅ Projet déposé avec succès !', 'success');
-      // Réinitialiser le formulaire
-      document.getElementById('projetTitre').value = '';
-      document.getElementById('projetDesc').value  = '';
-      fileInput.value = '';
-      document.getElementById('fileNameDisplay').innerHTML = '';
-      // Recharger la liste
-      await loadProjects();
-      setTimeout(() => { msgDiv.style.display = 'none'; }, 3000);
-    } else {
-      showMsg('❌ ' + result.message, 'error');
+    if (!titre || !description || !file) {
+        showMsg('⚠️ Veuillez remplir tous les champs et joindre un fichier.', 'error');
+        return;
     }
-  } catch (err) {
-    showMsg('❌ Erreur de connexion au serveur.', 'error');
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Publier le projet';
-  }
+
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (!['pdf', 'zip'].includes(ext)) {
+        showMsg('❌ Format non accepté (PDF ou ZIP uniquement).', 'error');
+        return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+        showMsg('❌ Fichier trop volumineux (max 10 Mo).', 'error');
+        return;
+    }
+
+    const btn = document.getElementById('btnSubmit');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
+
+    const formData = new FormData();
+    formData.append('titre', titre);
+    formData.append('description', description);
+    formData.append('categorie', categorie);
+    formData.append('fichier', file);
+
+    try {
+        const res = await fetch(`${API_BASE}depot/upload.php`, {
+            method: 'POST',
+            body: formData,
+            credentials: 'include'
+        });
+        const result = await res.json();
+
+        if (result.success) {
+            showMsg('✅ Projet déposé avec succès !', 'success');
+            document.getElementById('projetTitre').value = '';
+            document.getElementById('projetDesc').value = '';
+            fileInput.value = '';
+            document.getElementById('fileNameDisplay').innerHTML = '';
+            await loadProjects();
+            setTimeout(() => {
+                msgDiv.style.display = 'none';
+            }, 3000);
+        } else {
+            showMsg('❌ ' + result.message, 'error');
+        }
+    } catch (err) {
+        console.error('Erreur soumettreProjet:', err);
+        showMsg('❌ Erreur de connexion au serveur.', 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Publier le projet';
+    }
 };
 
 // ════════════════════════════════════════════════════════
 //  6. FILTRES & ÉVÉNEMENTS
 // ════════════════════════════════════════════════════════
 function applyFilters() {
-  // Sync chips
-  document.querySelectorAll('.filter-chip').forEach(chip => {
-    chip.classList.toggle('active', chip.getAttribute('data-type') === currentQuickType);
-  });
-  loadProjects();
+    document.querySelectorAll('.filter-chip').forEach(chip => {
+        chip.classList.toggle('active', chip.getAttribute('data-type') === currentQuickType);
+    });
+    loadProjects();
 }
 
 function bindEvents() {
-  // Recherche
-  document.getElementById('searchInput').addEventListener('input', e => {
-    currentSearch = e.target.value;
-    loadProjects();
-  });
-
-  // Chips rapides (type fichier)
-  document.getElementById('filterAllBtn').addEventListener('click', () => {
-    currentQuickType = 'all';
-    syncRadio('all');
-    applyFilters();
-  });
-  document.getElementById('filterPdfBtn').addEventListener('click', () => {
-    currentQuickType = 'pdf';
-    syncRadio('pdf');
-    applyFilters();
-  });
-  document.getElementById('filterZipBtn').addEventListener('click', () => {
-    currentQuickType = 'zip';
-    syncRadio('zip');
-    applyFilters();
-  });
-
-  // Radios sidebar
-  document.querySelectorAll('input[name="typeFichier"]').forEach(r => {
-    r.addEventListener('change', e => {
-      currentQuickType = e.target.value;
-      applyFilters();
+    document.getElementById('searchInput').addEventListener('input', e => {
+        currentSearch = e.target.value;
+        loadProjects();
     });
-  });
 
-  // Select catégorie
-  document.getElementById('categorieSelect').addEventListener('change', e => {
-    currentCategorie = e.target.value;
-    loadProjects();
-  });
+    document.getElementById('filterAllBtn').addEventListener('click', () => {
+        currentQuickType = 'all';
+        syncRadio('all');
+        applyFilters();
+    });
+    
+    document.getElementById('filterPdfBtn').addEventListener('click', () => {
+        currentQuickType = 'pdf';
+        syncRadio('pdf');
+        applyFilters();
+    });
+    
+    document.getElementById('filterZipBtn').addEventListener('click', () => {
+        currentQuickType = 'zip';
+        syncRadio('zip');
+        applyFilters();
+    });
 
-  // Reset
-  document.getElementById('resetFiltersBtn').addEventListener('click', () => {
-    currentSearch    = '';
-    currentQuickType = 'all';
-    currentCategorie = 'all';
-    document.getElementById('searchInput').value     = '';
-    document.getElementById('categorieSelect').value = 'all';
-    syncRadio('all');
-    applyFilters();
-  });
+    document.querySelectorAll('input[name="typeFichier"]').forEach(r => {
+        r.addEventListener('change', e => {
+            currentQuickType = e.target.value;
+            applyFilters();
+        });
+    });
+
+    document.getElementById('categorieSelect').addEventListener('change', e => {
+        currentCategorie = e.target.value;
+        loadProjects();
+    });
+
+    document.getElementById('resetFiltersBtn').addEventListener('click', () => {
+        currentSearch = '';
+        currentQuickType = 'all';
+        currentCategorie = 'all';
+        document.getElementById('searchInput').value = '';
+        document.getElementById('categorieSelect').value = 'all';
+        syncRadio('all');
+        applyFilters();
+    });
 }
 
 function syncRadio(val) {
-  const r = document.querySelector(`input[name="typeFichier"][value="${val}"]`);
-  if (r) r.checked = true;
+    const r = document.querySelector(`input[name="typeFichier"][value="${val}"]`);
+    if (r) r.checked = true;
 }
 
 // ════════════════════════════════════════════════════════
 //  UTILITAIRES
 // ════════════════════════════════════════════════════════
 function getCategorieLabel(cat) {
-  const map = { web:'🌐 Web', ia:'🤖 IA', mobile:'📱 Mobile', design:'🎨 Design', data:'📊 Data' };
-  return map[cat] || '📁 Général';
+    const map = { web: '🌐 Web', ia: '🤖 IA', mobile: '📱 Mobile', design: '🎨 Design', data: '📊 Data' };
+    return map[cat] || '📁 Général';
 }
 
 function escapeHtml(str) {
-  if (!str) return '';
-  return String(str).replace(/[&<>]/g, m =>
-    ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])
-  );
+    if (!str) return '';
+    return String(str).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
 }
 
 window.updateFileName = function(input) {
-  const name = input.files[0]?.name || '';
-  document.getElementById('fileNameDisplay').innerHTML =
-    name ? `<i class="fas fa-check-circle"></i> ${escapeHtml(name)}` : '';
+    const name = input.files[0]?.name || '';
+    document.getElementById('fileNameDisplay').innerHTML = name ? `<i class="fas fa-check-circle"></i> ${escapeHtml(name)}` : '';
 };
 
 // ════════════════════════════════════════════════════════
 //  INITIALISATION
 // ════════════════════════════════════════════════════════
 (async () => {
-  await checkSession();   // liaison Salma
-  await loadProjects();   // liaison BDD Inas
-  bindEvents();
+    await checkSession();
+    await loadProjects();
+    bindEvents();
 })();
 </script>
 

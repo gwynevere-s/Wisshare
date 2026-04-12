@@ -1,30 +1,33 @@
 <?php
 session_start();
 header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: http://localhost');
+header('Access-Control-Allow-Credentials: true');
 
 // Connexion BDD
-$host    = 'localhost';
-$db      = 'wisshare';
-$user    = 'root';
-$pass    = '';
+$host = 'localhost';
+$db = 'wisshare';
+$user = 'root';
+$pass = '';
 $charset = 'utf8mb4';
 
 try {
     $pdo = new PDO(
         "mysql:host=$host;dbname=$db;charset=$charset",
-        $user, $pass,
+        $user,
+        $pass,
         [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
     );
 } catch (PDOException $e) {
-    echo json_encode(['success' => false, 'message' => 'Erreur BDD.']);
+    echo json_encode(['success' => false, 'message' => 'Erreur BDD: ' . $e->getMessage()]);
     exit;
 }
 
 // Lire les données JSON
 $data = json_decode(file_get_contents('php://input'), true);
 
-$nom          = trim($data['nom'] ?? '');
-$email        = trim($data['email'] ?? '');
+$nom = trim($data['nom'] ?? '');
+$email = trim($data['email'] ?? '');
 $mot_de_passe = $data['mot_de_passe'] ?? '';
 
 // Validation
@@ -61,13 +64,13 @@ try {
         VALUES (:nom, :email, :mot_de_passe)
     ");
     $stmt->execute([
-        ':nom'          => $nom,
-        ':email'        => $email,
+        ':nom' => $nom,
+        ':email' => $email,
         ':mot_de_passe' => $hash
     ]);
 
     echo json_encode(['success' => true, 'message' => 'Inscription réussie !']);
 } catch (PDOException $e) {
-    echo json_encode(['success' => false, 'message' => 'Erreur lors de l\'inscription.']);
+    echo json_encode(['success' => false, 'message' => 'Erreur lors de l\'inscription: ' . $e->getMessage()]);
 }
 ?>
