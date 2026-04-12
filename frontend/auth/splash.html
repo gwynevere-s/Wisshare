@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"/>
+  <title>WisShare | L'expérience universitaire</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #E8F0FE 0%, #D4E4FC 50%, #C8DDF5 100%);
+      overflow: hidden;
+      height: 100vh;
+      cursor: pointer;
+    }
+
+    /* Canvas 2D pour l'animation du logo (plus propre que 3D) */
+    #logo-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      display: block;
+    }
+
+    /* Overlay subtil */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, transparent 40%, rgba(232, 240, 254, 0.2) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Contenu principal */
+    .splash-content {
+      position: relative;
+      z-index: 10;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      opacity: 0;
+      animation: contentFadeIn 1.2s ease-out 0.8s forwards;
+    }
+
+    @keyframes contentFadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    /* Éléments universitaires flottants subtils */
+    .uni-elements {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .uni-item {
+      position: absolute;
+      font-size: 28px;
+      animation: floatElement 10s ease-in-out infinite;
+      opacity: 0.3;
+      filter: blur(1px);
+    }
+
+    @keyframes floatElement {
+      0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.2; }
+      50% { transform: translateY(-20px) rotate(5deg); opacity: 0.4; }
+    }
+
+    .item1 { top: 15%; left: 8%; animation-delay: 0s; }
+    .item2 { top: 20%; right: 10%; animation-delay: 2s; }
+    .item3 { bottom: 20%; left: 12%; animation-delay: 4s; }
+    .item4 { bottom: 25%; right: 8%; animation-delay: 1s; }
+    .item5 { top: 50%; left: 5%; animation-delay: 3s; }
+    .item6 { top: 60%; right: 5%; animation-delay: 5s; }
+    .item7 { top: 80%; left: 50%; animation-delay: 2.5s; transform: translateX(-50%); }
+    .item8 { top: 10%; left: 50%; animation-delay: 3.5s; transform: translateX(-50%); }
+
+    /* Tagline */
+    .tagline {
+      margin-top: 30px;
+      color: #4a6a8a;
+      font-size: 16px;
+      letter-spacing: 4px;
+      font-weight: 400;
+      text-transform: uppercase;
+      animation: taglineFade 2s ease-in-out infinite;
+    }
+
+    @keyframes taglineFade {
+      0%, 100% { opacity: 0.6; letter-spacing: 4px; }
+      50% { opacity: 1; letter-spacing: 6px; }
+    }
+
+    /* Message d'invitation */
+    .invite {
+      position: absolute;
+      bottom: 50px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      z-index: 10;
+      animation: bounceSoft 2s ease-in-out infinite;
+    }
+
+    .invite-text {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(8px);
+      padding: 10px 24px;
+      border-radius: 40px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #1a73e8;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      letter-spacing: 1px;
+    }
+
+    .invite-text span {
+      display: inline-block;
+      animation: arrowMove 1s ease-in-out infinite;
+      margin-left: 6px;
+    }
+
+    @keyframes bounceSoft {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    @keyframes arrowMove {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(4px); }
+    }
+
+    /* Bouton son */
+    .sound-btn {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      font-size: 18px;
+      transition: all 0.3s;
+      color: #1a73e8;
+    }
+
+    .sound-btn:hover {
+      transform: scale(1.1);
+      background: white;
+    }
+
+    /* Progress bar minimaliste */
+    .progress-container {
+      position: absolute;
+      bottom: 110px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 150px;
+      height: 2px;
+      background: rgba(26, 115, 232, 0.2);
+      border-radius: 2px;
+      overflow: hidden;
+      z-index: 10;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #1a73e8, #7BBDE8);
+      border-radius: 2px;
+      transition: width 0.1s linear;
+    }
+
+    /* Animation de fade out */
+    .fade-out {
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="logo-canvas"></canvas>
+  <div class="overlay"></div>
+
+  <!-- Éléments universitaires flottants subtils -->
+  <div class="uni-elements">
+    <div class="uni-item item1">🎓</div>
+    <div class="uni-item item2">📚</div>
+    <div class="uni-item item3">💻</div>
+    <div class="uni-item item4">📜</div>
+    <div class="uni-item item5">🔬</div>
+    <div class="uni-item item6">✏️</div>
+    <div class="uni-item item7">🏛️</div>
+    <div class="uni-item item8">✨</div>
+  </div>
+
+  <div class="splash-content">
+    <div class="tagline">PLATEFORME COLLABORATIVE ÉTUDIANTE</div>
+  </div>
+
+  <div class="invite" id="inviteMessage">
+    <div class="invite-text">
+      Découvrir l'expérience
+      <span>→</span>
+    </div>
+  </div>
+
+  <div class="progress-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div class="sound-btn" id="soundBtn">🔇</div>
+
+  <script>
+    // ==================== ANIMATION DU LOGO (CANVAS 2D) ====================
+    const canvas = document.getElementById('logo-canvas');
+    const ctx = canvas.getContext('2d');
+    
+    let width, height;
+    let time = 0;
+    let animationProgress = 0;
+    let animationId = null;
+    
+    // Lettres du logo
+    const letters = ['W', 'i', 's', 'S', 'h', 'a', 'r', 'e'];
+    const letterColors = ['#1a73e8', '#2a83f8', '#3a93ff', '#4aa3ff', '#5ab3ff', '#6ac3ff', '#7ad3ff', '#8ae3ff'];
+    
+    function resizeCanvas() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+    }
+    
+    function drawLetter(letter, x, y, size, color, alpha, rotation, scale) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rotation);
+      ctx.scale(scale, scale);
+      
+      // Ombre légère
+      ctx.shadowBlur = 15;
+      ctx.shadowColor = 'rgba(26, 115, 232, 0.3)';
+      
+      // Texte
+      ctx.font = `600 ${size}px "Inter", "Segoe UI"`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = color;
+      ctx.globalAlpha = alpha;
+      ctx.fillText(letter, 0, 0);
+      
+      // Contour subtil
+      ctx.strokeStyle = 'rgba(26, 115, 232, 0.2)';
+      ctx.lineWidth = 1;
+      ctx.strokeText(letter, 0, 0);
+      
+      ctx.restore();
+    }
+    
+    function drawParticle(x, y, size, color, alpha) {
+      ctx.beginPath();
+      ctx.arc(x, y, size, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.globalAlpha = alpha;
+      ctx.fill();
+    }
+    
+    function animateLogo() {
+      ctx.clearRect(0, 0, width, height);
+      
+      // Centre du canvas
+      const centerX = width / 2;
+      const centerY = height / 2 - 50;
+      
+      // Animation progressive
+      animationProgress = Math.min(1, animationProgress + 0.008);
+      const easedProgress = 1 - Math.pow(1 - animationProgress, 3);
+      
+      // Calcul de l'espacement des lettres
+      const totalWidth = 380;
+      const letterWidth = totalWidth / letters.length;
+      const startX = centerX - totalWidth / 2;
+      
+      // Dessiner chaque lettre avec animation
+      letters.forEach((letter, i) => {
+        const targetX = startX + (i + 0.5) * letterWidth;
+        const delay = i * 0.08;
+        const letterProgress = Math.max(0, Math.min(1, (animationProgress - delay) / 0.5));
+        const easedLetterProgress = 1 - Math.pow(1 - letterProgress, 2);
+        
+        if (easedLetterProgress > 0) {
+          const offsetY = (1 - easedLetterProgress) * 30;
+          const scale = 0.6 + easedLetterProgress * 0.6;
+          const alpha = Math.min(1, easedLetterProgress * 1.2);
+          const rotation = (1 - easedLetterProgress) * 0.2;
+          
+          drawLetter(
+            letter,
+            targetX,
+            centerY + offsetY + Math.sin(time * 2 + i) * 2,
+            58,
+            letterColors[i],
+            alpha,
+            rotation,
+            scale
+          );
+        }
+      });
+      
+      // Dessiner des particules autour du logo
+      if (animationProgress > 0.3) {
+        const particleCount = 30;
+        for (let i = 0; i < particleCount; i++) {
+          const angle = time * 1.5 + i;
+          const radius = 200 + Math.sin(time * 2 + i) * 30;
+          const x = centerX + Math.cos(angle) * radius * animationProgress;
+          const y = centerY + Math.sin(angle) * radius * 0.5 * animationProgress;
+          const size = 2 + Math.sin(time * 5 + i) * 1;
+          drawParticle(x, y, size, '#1a73e8', 0.3 * animationProgress);
+        }
+      }
+      
+      // Dessiner des lignes élégantes
+      if (animationProgress > 0.5) {
+        ctx.beginPath();
+        ctx.moveTo(centerX - 220, centerY + 50);
+        ctx.lineTo(centerX - 100, centerY + 50);
+        ctx.lineTo(centerX - 60, centerY + 70);
+        ctx.strokeStyle = '#1a73e8';
+        ctx.lineWidth = 1.5;
+        ctx.globalAlpha = 0.3 * (animationProgress - 0.5) * 2;
+        ctx.stroke();
+        
+        ctx.beginPath();
+        ctx.moveTo(centerX + 220, centerY + 50);
+        ctx.lineTo(centerX + 100, centerY + 50);
+        ctx.lineTo(centerX + 60, centerY + 70);
+        ctx.stroke();
+      }
+      
+      time += 0.02;
+      animationId = requestAnimationFrame(animateLogo);
+    }
+    
+    function startAnimation() {
+      resizeCanvas();
+      animationProgress = 0;
+      time = 0;
+      animateLogo();
+    }
+    
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+    });
+    
+    startAnimation();
+    
+    // ==================== SON ÉPURÉ ET AMBIANT ====================
+    let audioContext = null;
+    let isSoundEnabled = false;
+    let soundInterval = null;
+    
+    function playElegantSound() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const now = audioContext.currentTime;
+        
+        // Note douce - Do
+        const osc1 = audioContext.createOscillator();
+        const gain1 = audioContext.createGain();
+        osc1.connect(gain1);
+        gain1.connect(audioContext.destination);
+        osc1.frequency.value = 523.25;
+        gain1.gain.value = 0.1;
+        osc1.start();
+        gain1.gain.exponentialRampToValueAtTime(0.00001, now + 1);
+        osc1.stop(now + 1);
+        
+        // Note douce - Mi
+        setTimeout(() => {
+          const osc2 = audioContext.createOscillator();
+          const gain2 = audioContext.createGain();
+          osc2.connect(gain2);
+          gain2.connect(audioContext.destination);
+          osc2.frequency.value = 659.25;
+          gain2.gain.value = 0.08;
+          osc2.start();
+          gain2.gain.exponentialRampToValueAtTime(0.00001, now + 1.8);
+          osc2.stop(now + 1.8);
+        }, 400);
+        
+        // Note douce - Sol
+        setTimeout(() => {
+          const osc3 = audioContext.createOscillator();
+          const gain3 = audioContext.createGain();
+          osc3.connect(gain3);
+          gain3.connect(audioContext.destination);
+          osc3.frequency.value = 783.99;
+          gain3.gain.value = 0.07;
+          osc3.start();
+          gain3.gain.exponentialRampToValueAtTime(0.00001, now + 2.5);
+          osc3.stop(now + 2.5);
+        }, 800);
+      }
+    }
+    
+    function startAmbientSound() {
+      if (!audioContext && isSoundEnabled) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const gainNode = audioContext.createGain();
+        gainNode.connect(audioContext.destination);
+        gainNode.gain.value = 0.15;
+        
+        // Pad ambiant doux
+        const pad = audioContext.createOscillator();
+        const padGain = audioContext.createGain();
+        pad.connect(padGain);
+        padGain.connect(gainNode);
+        pad.frequency.value = 110;
+        pad.type = 'sine';
+        padGain.gain.value = 0.05;
+        pad.start();
+        
+        // Arpège subtil
+        let arpIndex = 0;
+        const arpNotes = [261.63, 329.63, 392.00];
+        soundInterval = setInterval(() => {
+          if (!isSoundEnabled) return;
+          const osc = audioContext.createOscillator();
+          const oscGain = audioContext.createGain();
+          osc.connect(oscGain);
+          oscGain.connect(gainNode);
+          osc.frequency.value = arpNotes[arpIndex % arpNotes.length];
+          oscGain.gain.value = 0.04;
+          osc.start();
+          oscGain.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.6);
+          osc.stop(audioContext.currentTime + 0.6);
+          arpIndex++;
+        }, 1200);
+      }
+    }
+    
+    // ==================== GESTION DU SON ====================
+    const soundBtn = document.getElementById('soundBtn');
+    soundBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      isSoundEnabled = !isSoundEnabled;
+      if (isSoundEnabled) {
+        playElegantSound();
+        startAmbientSound();
+        soundBtn.textContent = '🔊';
+      } else {
+        if (soundInterval) clearInterval(soundInterval);
+        soundBtn.textContent = '🔇';
+      }
+    });
+    
+    // ==================== PROGRESS BAR ====================
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+      if (progress < 100) {
+        progress += 1.5;
+        document.getElementById('progressBar').style.width = progress + '%';
+      }
+    }, 30);
+    
+    // ==================== REDIRECTION AU CLIC ====================
+    let isTransitioning = false;
+    const body = document.body;
+    
+    body.addEventListener('click', (e) => {
+      if (e.target === soundBtn || soundBtn.contains(e.target)) return;
+      if (isTransitioning) return;
+      
+      isTransitioning = true;
+      
+      if (isSoundEnabled) {
+        playElegantSound();
+      }
+      
+      if (soundInterval) clearInterval(soundInterval);
+      clearInterval(progressInterval);
+      
+      const invite = document.getElementById('inviteMessage');
+      invite.style.opacity = '0';
+      invite.style.transition = 'opacity 0.5s';
+      
+      document.body.classList.add('fade-out');
+      
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 800);
+    });
+  </script>
+</body>
+</html>

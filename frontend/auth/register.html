@@ -3,153 +3,56 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"/>
-  <title>Inscription - WisShare</title>
+  <title>WisShare - Inscription</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #E8F0FE 0%, #D4E4FC 100%);
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      position: relative;
-      overflow-y: auto;
-      overflow-x: hidden;
-      background: linear-gradient(135deg, #0a0f2a 0%, #0a1a3a 50%, #0a0f2a 100%);
       padding: 40px 20px;
     }
 
-    /* Canvas 3D pour les icônes technologiques */
-    #tech-canvas {
+    #bg-canvas {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       z-index: 0;
-      display: block;
+      opacity: 0.4;
+      pointer-events: none;
     }
 
-    /* Overlay de brillance */
-    body::before {
-      content: '';
-      position: fixed;
+    .register-container {
+      position: relative;
+      z-index: 10;
       width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.4) 100%);
-      pointer-events: none;
-      z-index: 1;
-    }
-
-    /* Effet de lumière animée */
-    body::after {
-      content: '';
-      position: fixed;
-      width: 150%;
-      height: 150%;
-      top: -25%;
-      left: -25%;
-      background: radial-gradient(circle, rgba(26,115,232,0.12) 0%, transparent 70%);
-      animation: rotateLight 20s linear infinite;
-      pointer-events: none;
-      z-index: 1;
-    }
-
-    @keyframes rotateLight {
-      0% { transform: rotate(0deg) scale(1); opacity: 0.5; }
-      50% { transform: rotate(180deg) scale(1.2); opacity: 0.8; }
-      100% { transform: rotate(360deg) scale(1); opacity: 0.5; }
+      max-width: 480px;
     }
 
     .card {
-      background: rgba(255, 255, 255, 0.96);
-      backdrop-filter: blur(12px);
-      border-radius: 28px;
-      padding: 40px;
-      width: 100%;
-      max-width: 480px;
-      margin: 20px auto;
-      box-shadow: 0 25px 70px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.2);
-      transform: translateZ(0);
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      position: relative;
-      z-index: 10;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(15px);
+      border-radius: 40px;
+      padding: 48px 40px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      animation: slideUp 0.6s ease-out;
     }
 
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 35px 90px rgba(0,0,0,0.5), 0 0 0 2px rgba(255,255,255,0.3);
-    }
-
-    .logo {
-      text-align: center;
-      margin-bottom: 25px;
-      position: relative;
-      animation: logoPop 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    }
-
-    @keyframes logoPop {
-      0% { transform: scale(0) rotateY(-90deg); opacity: 0; }
-      100% { transform: scale(1) rotateY(0deg); opacity: 1; }
-    }
-
-    .logo h1 {
-      font-size: 34px;
-      background: linear-gradient(135deg, #1a73e8, #42a5f5, #7c4dff);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      text-shadow: 2px 2px 10px rgba(26,115,232,0.3);
-      animation: titleShine 3s infinite;
-    }
-
-    @keyframes titleShine {
-      0%, 100% { text-shadow: 2px 2px 10px rgba(26,115,232,0.3); filter: brightness(1); }
-      50% { text-shadow: 2px 2px 20px rgba(26,115,232,0.8); filter: brightness(1.05); }
-    }
-
-    .logo p {
-      color: #555;
-      font-size: 14px;
-      margin-top: 4px;
-      animation: fadeInUp 0.6s ease-out 0.2s both;
-    }
-
-    h2 {
-      text-align: center;
-      color: #222;
-      margin-bottom: 25px;
-      font-size: 22px;
-      position: relative;
-      animation: slideInLeft 0.6s ease-out;
-    }
-
-    @keyframes slideInLeft {
+    @keyframes slideUp {
       from {
         opacity: 0;
-        transform: translateX(-30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
-    }
-
-    .form-group {
-      margin-bottom: 18px;
-      animation: fadeInUp 0.5s ease-out backwards;
-    }
-
-    .form-group:nth-child(1) { animation-delay: 0.1s; }
-    .form-group:nth-child(2) { animation-delay: 0.2s; }
-    .form-group:nth-child(3) { animation-delay: 0.3s; }
-    .form-group:nth-child(4) { animation-delay: 0.4s; }
-
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(30px);
       }
       to {
         opacity: 1;
@@ -157,213 +60,176 @@
       }
     }
 
+    .logo {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .logo-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .logo h1 {
+      font-size: 28px;
+      background: linear-gradient(135deg, #1a73e8, #0d47a1);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .logo p {
+      color: #6b7280;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+
+    h2 {
+      font-size: 28px;
+      color: #1a2a6c;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #6b7280;
+      margin-bottom: 32px;
+      font-size: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
     label {
       display: block;
-      margin-bottom: 6px;
-      font-weight: 600;
-      color: #333;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #374151;
       font-size: 14px;
-      transform-origin: left;
-      transition: all 0.3s;
     }
 
     input {
       width: 100%;
-      padding: 12px 15px;
-      border: 2px solid #e0e0e0;
-      border-radius: 14px;
+      padding: 14px 18px;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 28px;
       font-size: 15px;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.3s;
       background: white;
     }
 
     input:focus {
       border-color: #1a73e8;
       outline: none;
-      box-shadow: 0 0 0 4px rgba(26,115,232,0.2);
-      transform: scale(1.02);
-    }
-
-    input:hover {
-      transform: translateX(4px);
-      border-color: #42a5f5;
+      box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
     }
 
     .btn {
       width: 100%;
       padding: 14px;
-      background: linear-gradient(135deg, #1a73e8, #0d47a1);
+      background: #1a73e8;
       color: white;
       border: none;
-      border-radius: 14px;
+      border-radius: 32px;
       font-size: 16px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      margin-top: 10px;
-      position: relative;
-      overflow: hidden;
-      animation: pulseButton 2s infinite;
-    }
-
-    .btn::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.5);
-      transform: translate(-50%, -50%);
-      transition: width 0.6s, height 0.6s;
-    }
-
-    .btn:hover::before {
-      width: 300px;
-      height: 300px;
+      transition: all 0.3s;
+      margin-top: 16px;
     }
 
     .btn:hover {
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: 0 10px 25px rgba(26,115,232,0.4);
-      background: linear-gradient(135deg, #42a5f5, #1a73e8);
+      background: #0d47a1;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(26, 115, 232, 0.3);
     }
 
-    @keyframes pulseButton {
-      0%, 100% { box-shadow: 0 4px 15px rgba(26,115,232,0.3); }
-      50% { box-shadow: 0 4px 25px rgba(26,115,232,0.6); }
+    .btn.loading {
+      opacity: 0.7;
+      pointer-events: none;
     }
 
-    .btn:active {
-      transform: translateY(2px);
+    .divider {
+      text-align: center;
+      margin: 28px 0;
+      color: #9ca3af;
+      font-size: 13px;
+      position: relative;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 40%;
+      height: 1px;
+      background: #e5e7eb;
+    }
+
+    .divider::before { left: 0; }
+    .divider::after { right: 0; }
+
+    .social-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+    }
+
+    .social-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 32px;
+      background: white;
+      border: 1.5px solid #e5e7eb;
+      color: #4b5563;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .social-btn:hover {
+      background: #f9fafb;
+      transform: translateY(-2px);
     }
 
     .message {
       text-align: center;
-      margin-top: 12px;
-      font-size: 14px;
-      padding: 12px;
-      border-radius: 12px;
-      animation: slideInUp 0.4s ease-out;
-      backdrop-filter: blur(5px);
-    }
-
-    @keyframes slideInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      margin-top: 16px;
+      font-size: 13px;
+      padding: 10px;
+      border-radius: 28px;
     }
 
     .message.success {
-      color: #2e7d32;
-      background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
-      border-left: 4px solid #4caf50;
-      box-shadow: 0 2px 10px rgba(76,175,80,0.2);
+      color: #059669;
+      background: rgba(5, 150, 105, 0.1);
     }
 
     .message.error {
-      color: #c62828;
-      background: linear-gradient(135deg, #ffebee, #ffcdd2);
-      border-left: 4px solid #f44336;
-      box-shadow: 0 2px 10px rgba(244,67,54,0.2);
+      color: #dc2626;
+      background: rgba(220, 38, 38, 0.1);
     }
 
     .link {
       text-align: center;
-      margin-top: 20px;
+      margin-top: 24px;
       font-size: 14px;
-      color: #666;
-      animation: fadeIn 0.8s ease-out 0.5s both;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+      color: #6b7280;
     }
 
     .link a {
       color: #1a73e8;
       text-decoration: none;
-      font-weight: 600;
-      position: relative;
-      transition: all 0.3s;
+      font-weight: 500;
     }
 
-    .link a::after {
-      content: '';
-      position: absolute;
-      width: 0;
-      height: 2px;
-      bottom: -2px;
-      left: 0;
-      background: linear-gradient(90deg, #1a73e8, #42a5f5);
-      transition: width 0.3s;
-    }
-
-    .link a:hover::after {
-      width: 100%;
-    }
-
-    .link a:hover {
-      transform: translateX(5px);
-      display: inline-block;
-    }
-
-    .card::before {
-      content: '';
-      position: absolute;
-      top: -2px;
-      left: -2px;
-      right: -2px;
-      bottom: -2px;
-      background: linear-gradient(45deg, #1a73e8, #42a5f5, #7c4dff, #1a73e8);
-      background-size: 400%;
-      border-radius: 30px;
-      z-index: -1;
-      opacity: 0;
-      transition: opacity 0.5s;
-      animation: borderGlow 3s linear infinite;
-    }
-
-    .card:hover::before {
-      opacity: 1;
-    }
-
-    @keyframes borderGlow {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    .btn.loading {
-      pointer-events: none;
-      opacity: 0.7;
-    }
-
-    .btn.loading::after {
-      content: '';
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      top: 50%;
-      left: 50%;
-      margin-left: -10px;
-      margin-top: -10px;
-      border: 3px solid rgba(255,255,255,0.3);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+    .hidden { display: none; }
 
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
@@ -371,421 +237,204 @@
       75% { transform: translateX(5px); }
     }
 
-    .shake {
-      animation: shake 0.4s ease-in-out;
-    }
-
-    /* Responsive */
-    @media (max-width: 550px) {
-      .card {
-        padding: 30px 25px;
-        margin: 10px;
-      }
-      
-      .logo h1 {
-        font-size: 28px;
-      }
-      
-      h2 {
-        font-size: 20px;
-      }
-      
-      input, .btn {
-        padding: 10px 12px;
-      }
-    }
+    .shake { animation: shake 0.4s ease-in-out; }
   </style>
 </head>
 <body>
 
-  <canvas id="tech-canvas"></canvas>
+  <canvas id="bg-canvas"></canvas>
 
-  <div class="card">
-    <div class="logo">
-      <h1>🎓 WisShare</h1>
-      <p>Plateforme de dépôt de mini-projets étudiants</p>
-    </div>
+  <div class="register-container">
+    <div class="card">
+      <div class="logo">
+        <div class="logo-icon">📝</div>
+        <h1>WisShare</h1>
+        <p>Plateforme de mini-projets étudiants</p>
+      </div>
+      <h2>Inscription</h2>
+      <p class="subtitle">Créez votre compte gratuitement</p>
 
-    <h2>Créer un compte</h2>
+      <div class="form-group">
+        <label>Nom complet</label>
+        <input type="text" id="regName" placeholder="Votre nom">
+      </div>
 
-    <div class="form-group">
-      <label for="nom">Nom complet *</label>
-      <input type="text" id="nom" placeholder="Ex: Salma El Moudari"/>
-    </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="regEmail" placeholder="exemple@email.com">
+      </div>
 
-    <div class="form-group">
-      <label for="email">Adresse email *</label>
-      <input type="email" id="email" placeholder="exemple@email.com"/>
-    </div>
+      <div class="form-group">
+        <label>Mot de passe</label>
+        <input type="password" id="regPassword" placeholder="Minimum 6 caractères">
+      </div>
 
-    <div class="form-group">
-      <label for="mot_de_passe">Mot de passe *</label>
-      <input type="password" id="mot_de_passe" placeholder="Minimum 6 caractères"/>
-    </div>
+      <div class="form-group">
+        <label>Confirmer</label>
+        <input type="password" id="regConfirm" placeholder="Répétez">
+      </div>
 
-    <div class="form-group">
-      <label for="confirm_mdp">Confirmer le mot de passe *</label>
-      <input type="password" id="confirm_mdp" placeholder="Répétez le mot de passe"/>
-    </div>
+      <button class="btn" onclick="register()">S'inscrire</button>
 
-    <button class="btn" onclick="inscrire()">✨ S'inscrire</button>
+      <div id="registerMsg" class="message hidden"></div>
 
-    <div id="message" class="message" style="display:none;"></div>
+      <div class="divider">OU</div>
 
-    <div class="link">
-      Déjà un compte ? <a href="login.html">Se connecter</a>
+      <div class="social-buttons">
+        <div class="social-btn" onclick="alert('Google - Bientôt disponible')">G Google</div>
+        <div class="social-btn" onclick="alert('Facebook - Bientôt disponible')">f Facebook</div>
+      </div>
+
+      <div class="link">
+        Déjà un compte ? <a href="login.html">Se connecter</a>
+      </div>
     </div>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script>
-    // Initialisation Three.js
-    let scene, camera, renderer, objects = [];
+    // Fond 3D
+    let scene, camera, renderer, particles;
     
-    // Icônes technologiques
-    const techIcons = [
-      '⚛️', '🐍', '☕', '💻', '🖥️', '📱', '🌐', '🔧', '⚙️', '💾', 
-      '📡', '🔬', '🤖', '🎮', '🕹️', '📊', '📈', '🔒', '🔑', '☁️',
-      '🐳', '📦', '🚀', '⚡', '🎯', '💡', '🔮', '🛠️', '📐', '🧠',
-      '🖧', '📀', '💿', '🔋', '🕸️', '🎛️', '⌨️', '🖱️', '🖨️', '📷',
-      '🎥', '📻', '🕰️', '💎', '⭐', '🔥', '💧', '🌊', '🎨', '🏆'
-    ];
-    
-    function init3D() {
-      const canvas = document.getElementById('tech-canvas');
+    function initBackground() {
+      const canvas = document.getElementById('bg-canvas');
       scene = new THREE.Scene();
       scene.background = null;
-    
+      
       camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
-      camera.position.z = 22;
-      camera.position.y = 1;
-    
+      camera.position.z = 20;
+      
       renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
       renderer.setSize(window.innerWidth, window.innerHeight);
       renderer.setClearColor(0x000000, 0);
-    
-      // Lumières
-      const ambientLight = new THREE.AmbientLight(0x404060);
+      
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
       scene.add(ambientLight);
       
-      const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-      dirLight.position.set(2, 3, 2);
-      scene.add(dirLight);
+      const particleCount = 500;
+      const particleGeometry = new THREE.BufferGeometry();
+      const particlePositions = new Float32Array(particleCount * 3);
       
-      const backLight = new THREE.DirectionalLight(0x7c4dff, 0.5);
-      backLight.position.set(-2, 1, -3);
-      scene.add(backLight);
-      
-      const fillLight = new THREE.PointLight(0x1a73e8, 0.4);
-      fillLight.position.set(1, 2, 3);
-      scene.add(fillLight);
-      
-      const colorLight = new THREE.PointLight(0xff44aa, 0.3);
-      colorLight.position.set(-1, 1, 2);
-      scene.add(colorLight);
-      
-      // Création des icônes 3D
-      const iconCount = 70;
-      
-      for (let i = 0; i < iconCount; i++) {
-        const canvasTexture = document.createElement('canvas');
-        canvasTexture.width = 128;
-        canvasTexture.height = 128;
-        const ctxTex = canvasTexture.getContext('2d');
-        
-        const randomIcon = techIcons[Math.floor(Math.random() * techIcons.length)];
-        const hue = (Math.random() * 360) % 360;
-        ctxTex.fillStyle = `hsla(${hue}, 80%, 65%, 0.95)`;
-        ctxTex.fillRect(0, 0, 128, 128);
-        ctxTex.font = '75px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif';
-        ctxTex.textAlign = 'center';
-        ctxTex.textBaseline = 'middle';
-        ctxTex.fillStyle = 'white';
-        ctxTex.fillText(randomIcon, 64, 64);
-        
-        ctxTex.shadowBlur = 10;
-        ctxTex.strokeStyle = 'rgba(255,255,255,0.4)';
-        ctxTex.lineWidth = 2;
-        ctxTex.strokeRect(4, 4, 120, 120);
-        
-        const texture = new THREE.CanvasTexture(canvasTexture);
-        
-        // Formes variées
-        let geometry;
-        const shape = Math.random();
-        if (shape < 0.4) {
-          geometry = new THREE.BoxGeometry(1.0, 1.0, 1.0);
-        } else if (shape < 0.7) {
-          geometry = new THREE.SphereGeometry(0.7, 32, 32);
-        } else {
-          geometry = new THREE.IcosahedronGeometry(0.7, 0);
-        }
-        
-        const material = new THREE.MeshStandardMaterial({
-          map: texture,
-          roughness: 0.25,
-          metalness: 0.7,
-          emissive: new THREE.Color(0x1a73e8),
-          emissiveIntensity: 0.15
-        });
-        
-        const mesh = new THREE.Mesh(geometry, material);
-        
-        // Position dans l'espace
-        mesh.position.x = (Math.random() - 0.5) * 32;
-        mesh.position.y = (Math.random() - 0.5) * 22;
-        mesh.position.z = (Math.random() - 0.5) * 25 - 5;
-        
-        mesh.userData = {
-          rotationSpeedX: (Math.random() - 0.5) * 0.015,
-          rotationSpeedY: (Math.random() - 0.5) * 0.015,
-          rotationSpeedZ: (Math.random() - 0.5) * 0.01,
-          floatSpeed: 0.3 + Math.random() * 0.8,
-          floatOffset: Math.random() * Math.PI * 2,
-          originalY: mesh.position.y,
-          originalX: mesh.position.x,
-          scale: 0.6 + Math.random() * 0.7
-        };
-        
-        mesh.scale.set(mesh.userData.scale, mesh.userData.scale, mesh.userData.scale);
-        
-        scene.add(mesh);
-        objects.push(mesh);
+      for (let i = 0; i < particleCount; i++) {
+        particlePositions[i*3] = (Math.random() - 0.5) * 50;
+        particlePositions[i*3+1] = (Math.random() - 0.5) * 30;
+        particlePositions[i*3+2] = (Math.random() - 0.5) * 30 - 10;
       }
       
-      // Étoiles en arrière-plan
-      const starGeometry = new THREE.BufferGeometry();
-      const starCount = 2000;
-      const starPositions = new Float32Array(starCount * 3);
-      for (let i = 0; i < starCount; i++) {
-        starPositions[i*3] = (Math.random() - 0.5) * 250;
-        starPositions[i*3+1] = (Math.random() - 0.5) * 150;
-        starPositions[i*3+2] = (Math.random() - 0.5) * 80 - 40;
-      }
-      starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-      const starMaterial = new THREE.PointsMaterial({ color: 0xaaccff, size: 0.1, transparent: true, opacity: 0.5 });
-      const stars = new THREE.Points(starGeometry, starMaterial);
-      scene.add(stars);
+      particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+      const particleMaterial = new THREE.PointsMaterial({ color: 0x1a73e8, size: 0.06, transparent: true, opacity: 0.3 });
+      particles = new THREE.Points(particleGeometry, particleMaterial);
+      scene.add(particles);
       
-      // Anneaux lumineux
-      const ringGeometry = new THREE.TorusGeometry(6, 0.08, 128, 300);
-      const ringMaterial = new THREE.MeshStandardMaterial({ color: 0x1a73e8, emissive: 0x1a73e8, emissiveIntensity: 0.5 });
-      const ring = new THREE.Mesh(ringGeometry, ringMaterial);
-      ring.rotation.x = Math.PI / 2;
-      ring.position.z = -12;
-      scene.add(ring);
-      
-      const ring2Geometry = new THREE.TorusGeometry(8, 0.06, 128, 300);
-      const ring2Material = new THREE.MeshStandardMaterial({ color: 0x7c4dff, emissive: 0x7c4dff, emissiveIntensity: 0.4 });
-      const ring2 = new THREE.Mesh(ring2Geometry, ring2Material);
-      ring2.rotation.x = Math.PI / 2 + 0.3;
-      ring2.rotation.z = 0.5;
-      ring2.position.z = -15;
-      scene.add(ring2);
-      
-      const ring3Geometry = new THREE.TorusGeometry(4, 0.05, 128, 300);
-      const ring3Material = new THREE.MeshStandardMaterial({ color: 0x42a5f5, emissive: 0x42a5f5, emissiveIntensity: 0.3 });
-      const ring3 = new THREE.Mesh(ring3Geometry, ring3Material);
-      ring3.rotation.x = Math.PI / 2 - 0.2;
-      ring3.rotation.z = -0.3;
-      ring3.position.z = -9;
-      scene.add(ring3);
-      
-      objects.push(ring, ring2, ring3);
-      
-      // Animation
       let time = 0;
       function animate() {
         requestAnimationFrame(animate);
-        time += 0.016;
-        
-        objects.forEach(obj => {
-          if (obj.userData.rotationSpeedX !== undefined) {
-            obj.rotation.x += obj.userData.rotationSpeedX;
-            obj.rotation.y += obj.userData.rotationSpeedY;
-            obj.rotation.z += obj.userData.rotationSpeedZ;
-            
-            obj.position.y = obj.userData.originalY + Math.sin(time * obj.userData.floatSpeed + obj.userData.floatOffset) * 0.3;
-            obj.position.x = obj.userData.originalX + Math.cos(time * obj.userData.floatSpeed * 0.7 + obj.userData.floatOffset) * 0.2;
-          }
-        });
-        
-        if (ring) {
-          ring.rotation.z += 0.006;
-          ring.rotation.x = Math.PI / 2 + Math.sin(time * 0.3) * 0.1;
-        }
-        if (ring2) {
-          ring2.rotation.y += 0.004;
-          ring2.rotation.x = Math.PI / 2 + 0.3 + Math.sin(time * 0.5) * 0.1;
-        }
-        if (ring3) {
-          ring3.rotation.z -= 0.005;
-          ring3.rotation.x = Math.PI / 2 - 0.2 + Math.cos(time * 0.4) * 0.08;
-        }
-        
-        stars.rotation.y += 0.0002;
-        stars.rotation.x += 0.0001;
-        
-        camera.position.x += (Math.sin(time * 0.08) * 0.2 - camera.position.x) * 0.02;
-        camera.position.y += (Math.sin(time * 0.15) * 0.15 - camera.position.y) * 0.02;
-        camera.lookAt(0, 0, 0);
-        
+        time += 0.01;
+        particles.rotation.y = time * 0.05;
         renderer.render(scene, camera);
       }
-      
       animate();
       
-      // Redimensionnement
-      window.addEventListener('resize', onWindowResize, false);
-      function onWindowResize() {
+      window.addEventListener('resize', () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
-      }
-    }
-    
-    // Démarrer après chargement
-    if (typeof THREE !== 'undefined') {
-      init3D();
-    } else {
-      window.addEventListener('load', () => {
-        if (typeof THREE !== 'undefined') init3D();
       });
     }
     
-    // Particules flottantes
-    function createFloatingParticle() {
+    initBackground();
+
+    function createParticle() {
       const particle = document.createElement('div');
       particle.style.position = 'fixed';
-      particle.style.width = Math.random() * 6 + 2 + 'px';
+      particle.style.width = Math.random() * 8 + 3 + 'px';
       particle.style.height = particle.style.width;
-      particle.style.background = `radial-gradient(circle, rgba(26,115,232,${Math.random() * 0.8 + 0.2}), rgba(124,77,255,0))`;
+      particle.style.background = `radial-gradient(circle, #1a73e8, #0d47a1)`;
       particle.style.borderRadius = '50%';
       particle.style.left = Math.random() * window.innerWidth + 'px';
       particle.style.top = window.innerHeight + 'px';
       particle.style.pointerEvents = 'none';
-      particle.style.zIndex = '5';
+      particle.style.zIndex = '50';
       document.body.appendChild(particle);
-      
-      const duration = Math.random() * 5 + 3;
       particle.animate([
-        { transform: 'translateY(0px) translateX(0px)', opacity: 0.8 },
-        { transform: `translateY(-${window.innerHeight + 100}px) translateX(${(Math.random() - 0.5) * 150}px)`, opacity: 0 }
-      ], {
-        duration: duration * 1000,
-        easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
-        fill: 'forwards'
-      });
-      
-      setTimeout(() => particle.remove(), duration * 1000);
+        { transform: 'translateY(0px)', opacity: 0.8 },
+        { transform: `translateY(-${window.innerHeight + 100}px)`, opacity: 0 }
+      ], { duration: (Math.random() * 4 + 2) * 1000, fill: 'forwards' });
+      setTimeout(() => particle.remove(), 6000);
     }
-    
-    setInterval(() => {
-      if (Math.random() > 0.85) {
-        createFloatingParticle();
-      }
-    }, 200);
-    
-    // Événements des inputs
-    const inputs = document.querySelectorAll('input');
-    inputs.forEach(input => {
-      input.addEventListener('focus', function() {
-        this.style.transform = 'scale(1.02)';
-        this.style.transition = 'all 0.3s';
-      });
-      input.addEventListener('blur', function() {
-        this.style.transform = 'scale(1)';
-      });
-    });
-    
-    async function inscrire() {
-      const nom         = document.getElementById('nom').value.trim();
-      const email       = document.getElementById('email').value.trim();
-      const mot_de_passe = document.getElementById('mot_de_passe').value;
-      const confirm_mdp = document.getElementById('confirm_mdp').value;
-      const msgEl       = document.getElementById('message');
-      const btn         = document.querySelector('.btn');
-    
+
+    function showMessage(element, text, type) {
+      element.textContent = text;
+      element.className = 'message ' + type;
+      element.classList.remove('hidden');
+      setTimeout(() => element.classList.add('hidden'), 5000);
+    }
+
+    function shakeCard() {
+      document.querySelector('.card').classList.add('shake');
+      setTimeout(() => document.querySelector('.card').classList.remove('shake'), 400);
+    }
+
+    async function register() {
+      const nom = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const password = document.getElementById('regPassword').value;
+      const confirm = document.getElementById('regConfirm').value;
+      const msgEl = document.getElementById('registerMsg');
+      const btn = document.querySelector('.btn');
+
       btn.classList.add('loading');
-      btn.textContent = '✨ Inscription en cours...';
-    
-      msgEl.style.display = 'none';
-      msgEl.className = 'message';
-    
-      function shakeCard() {
-        const card = document.querySelector('.card');
-        card.classList.add('shake');
-        setTimeout(() => card.classList.remove('shake'), 400);
-      }
-    
-      if (!nom || !email || !mot_de_passe || !confirm_mdp) {
-        showMsg('⚠️ Veuillez remplir tous les champs.', 'error');
+      btn.textContent = 'Inscription...';
+
+      if (!nom || !email || !password || !confirm) {
+        showMessage(msgEl, 'Veuillez remplir tous les champs.', 'error');
         shakeCard();
         btn.classList.remove('loading');
-        btn.textContent = '✨ S\'inscrire';
+        btn.textContent = 'S\'inscrire';
         return;
       }
-    
-      if (mot_de_passe.length < 6) {
-        showMsg('❌ Le mot de passe doit contenir au moins 6 caractères.', 'error');
+
+      if (password.length < 6) {
+        showMessage(msgEl, 'Mot de passe trop court (min 6 caractères).', 'error');
         shakeCard();
         btn.classList.remove('loading');
-        btn.textContent = '✨ S\'inscrire';
+        btn.textContent = 'S\'inscrire';
         return;
       }
-    
-      if (mot_de_passe !== confirm_mdp) {
-        showMsg('❌ Les mots de passe ne correspondent pas.', 'error');
+
+      if (password !== confirm) {
+        showMessage(msgEl, 'Les mots de passe ne correspondent pas.', 'error');
         shakeCard();
         btn.classList.remove('loading');
-        btn.textContent = '✨ S\'inscrire';
+        btn.textContent = 'S\'inscrire';
         return;
       }
-    
+
       try {
         const response = await fetch('../../backend/auth/register.php', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nom, email, mot_de_passe })
+          body: JSON.stringify({ nom, email, mot_de_passe: password })
         });
-    
         const result = await response.json();
-    
+
         if (result.success) {
-          showMsg('✅ Inscription réussie ! Redirection...', 'success');
-          for(let i = 0; i < 50; i++) {
-            setTimeout(() => createFloatingParticle(), i * 25);
-          }
+          showMessage(msgEl, '✅ Inscription réussie ! Redirection...', 'success');
+          for(let i = 0; i < 30; i++) setTimeout(createParticle, i * 30);
           setTimeout(() => window.location.href = 'login.html', 2000);
         } else {
-          showMsg('❌ ' + result.message, 'error');
+          showMessage(msgEl, '❌ ' + result.message, 'error');
           shakeCard();
           btn.classList.remove('loading');
-          btn.textContent = '✨ S\'inscrire';
+          btn.textContent = 'S\'inscrire';
         }
-      } catch (err) {
-        showMsg('❌ Erreur de connexion au serveur.', 'error');
+      } catch(err) {
+        showMessage(msgEl, '❌ Erreur de connexion au serveur.', 'error');
         shakeCard();
         btn.classList.remove('loading');
-        btn.textContent = '✨ S\'inscrire';
+        btn.textContent = 'S\'inscrire';
       }
     }
-    
-    function showMsg(text, type) {
-      const msgEl = document.getElementById('message');
-      msgEl.textContent = text;
-      msgEl.className = 'message ' + type;
-      msgEl.style.display = 'block';
-      msgEl.style.animation = 'none';
-      msgEl.offsetHeight;
-      msgEl.style.animation = 'slideInUp 0.4s ease-out';
-    }
-    
-    document.querySelector('.btn').addEventListener('click', function(e) {
-      for(let i = 0; i < 30; i++) {
-        setTimeout(() => createFloatingParticle(), i * 20);
-      }
-    });
   </script>
 </body>
 </html>
