@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WisShare · Explorer les projets</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap');
+ 
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+ 
+    body {
+      background: linear-gradient(145deg, #f6f9fc 0%, #eef2f7 100%);
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      color: #1a2c3e;
+      min-height: 100vh;
+    }
+ 
+    /* HEADER */
+    .glass-header {
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(66,153,225,0.2);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+      padding: 0 40px;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo-area { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+    .logo-icon {
+      font-size: 28px;
+      background: linear-gradient(135deg,#1E6DFF,#3B82F6);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .logo-text {
+      font-weight: 700; font-size: 24px;
+      background: linear-gradient(135deg,#1E3A8A,#2563EB);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      letter-spacing: -0.3px;
+    }
+    .nav-links { display: flex; gap: 28px; align-items: center; }
+    .nav-links a {
+      text-decoration: none; font-weight: 500; color: #2c3e50;
+      font-size: 15px; display: flex; align-items: center; gap: 8px; transition: 0.2s;
+    }
+    .nav-links a:hover { color: #1E6DFF; transform: translateY(-1px); }
+    .nav-links a.active { color: #1E6DFF; font-weight: 600; }
+    .user-badge {
+      display: flex; align-items: center; gap: 8px; background: #e8f0fe;
+      padding: 6px 14px; border-radius: 40px; font-size: 13px; font-weight: 600; color: #1E6DFF;
+    }
+ 
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 50%, #3B82F6 100%);
+      color: white; padding: 60px 40px 80px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; top: -50%; left: -20%; width: 140%; height: 200%;
+      background: radial-gradient(ellipse at center, rgba(255,255,255,0.07) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.15); backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.3); padding: 6px 18px;
+      border-radius: 40px; font-size: 13px; font-weight: 500; margin-bottom: 24px;
+      animation: fadeInDown 0.5s ease-out;
+    }
+    .hero h1 {
+      font-size: clamp(32px, 5vw, 52px); font-weight: 700; margin-bottom: 16px;
+      letter-spacing: -0.5px; animation: fadeInDown 0.6s ease-out 0.1s both;
+    }
+    .hero p {
+      font-size: 18px; opacity: 0.85; max-width: 560px; margin: 0 auto 40px;
+      line-height: 1.6; animation: fadeInDown 0.6s ease-out 0.2s both;
+    }
+    .search-bar-wrap {
+      max-width: 620px; margin: 0 auto; position: relative;
+      animation: fadeInUp 0.6s ease-out 0.3s both;
+    }
+    .search-bar-wrap input {
+      width: 100%; padding: 18px 60px 18px 56px; border-radius: 50px;
+      border: none; font-size: 15px; font-family: inherit; outline: none;
+      color: #1a2c3e; box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+    .search-bar-wrap .search-icon {
+      position: absolute; left: 20px; top: 50%; transform: translateY(-50%);
+      color: #6b7280; font-size: 16px;
+    }
+    .search-bar-wrap .clear-btn {
+      position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+      background: #f3f4f6; border: none; border-radius: 50%; width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+      color: #6b7280; font-size: 12px; transition: 0.2s; opacity: 0; pointer-events: none;
+    }
+    .search-bar-wrap.has-value .clear-btn { opacity: 1; pointer-events: all; }
+    .search-bar-wrap .clear-btn:hover { background: #e5e7eb; color: #374151; }
+    .hero-stats {
+      display: flex; justify-content: center; gap: 40px; margin-top: 36px;
+      animation: fadeInUp 0.6s ease-out 0.4s both;
+    }
+    .stat-item { text-align: center; }
+    .stat-num { font-size: 28px; font-weight: 700; }
+    .stat-label { font-size: 12px; opacity: 0.75; text-transform: uppercase; letter-spacing: 0.5px; }
+ 
+    /* CONTENT */
+    .content-area { max-width: 1400px; margin: 0 auto; padding: 40px 28px 60px; }
+ 
+    /* FILTER ROW */
+    .filter-row {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px; margin-bottom: 32px;
+    }
+    .category-pills { display: flex; gap: 10px; flex-wrap: wrap; }
+    .pill {
+      display: flex; align-items: center; gap: 7px; padding: 8px 18px;
+      border-radius: 40px; font-size: 13px; font-weight: 500; cursor: pointer;
+      border: 1.5px solid #e5e7eb; background: white; color: #4b5563;
+      transition: all 0.2s; user-select: none;
+    }
+    .pill:hover { border-color: #2563EB; color: #2563EB; }
+    .pill.active {
+      background: linear-gradient(135deg, #1E3A8A, #2563EB);
+      border-color: transparent; color: white;
+      box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+    }
+    .pill .pill-count {
+      background: rgba(255,255,255,0.25); border-radius: 20px;
+      padding: 1px 7px; font-size: 11px;
+    }
+    .pill:not(.active) .pill-count { background: #f3f4f6; color: #9ca3af; }
+    .sort-select {
+      display: flex; align-items: center; gap: 8px; padding: 8px 16px;
+      border: 1.5px solid #e5e7eb; border-radius: 40px; background: white;
+      font-size: 13px; font-family: inherit; color: #4b5563;
+      cursor: pointer; outline: none; transition: border-color 0.2s;
+    }
+    .sort-select:hover { border-color: #2563EB; }
+ 
+    /* RESULTS BAR */
+    .results-bar {
+      display: flex; align-items: center;
+      justify-content: space-between; margin-bottom: 24px;
+    }
+    .results-count { font-size: 14px; color: #6b7280; }
+    .results-count strong { color: #1a2c3e; }
+    .view-toggle { display: flex; gap: 6px; }
+    .view-btn {
+      width: 34px; height: 34px; border-radius: 10px; border: 1.5px solid #e5e7eb;
+      background: white; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: #9ca3af; font-size: 14px; transition: all 0.2s;
+    }
+    .view-btn.active, .view-btn:hover { border-color: #2563EB; color: #2563EB; background: #eff6ff; }
+ 
+    /* GRID */
+    #projets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+    }
+    #projets-grid.list-view { grid-template-columns: 1fr; }
+ 
+    /* CARD */
+    .projet-card {
+      background: rgba(255,255,255,0.96); border-radius: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.02);
+      border: 1px solid rgba(255,255,255,0.6); overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      animation: fadeInUp 0.5s ease-out both;
+    }
+    .projet-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px rgba(37,99,235,0.12), 0 4px 8px rgba(0,0,0,0.04);
+      border-color: rgba(37,99,235,0.2);
+    }
+    .card-banner { height: 6px; }
+    .card-banner.cat-web    { background: linear-gradient(90deg, #2563EB, #60A5FA); }
+    .card-banner.cat-ia     { background: linear-gradient(90deg, #7C3AED, #A78BFA); }
+    .card-banner.cat-mobile { background: linear-gradient(90deg, #059669, #34D399); }
+    .card-banner.cat-design { background: linear-gradient(90deg, #DC2626, #F87171); }
+    .card-banner.cat-data   { background: linear-gradient(90deg, #D97706, #FCD34D); }
+    .card-body { padding: 22px 24px 20px; }
+    .card-header-row {
+      display: flex; align-items: flex-start;
+      justify-content: space-between; gap: 12px; margin-bottom: 12px;
+    }
+    .card-title { font-size: 16px; font-weight: 600; color: #1a2c3e; line-height: 1.4; flex: 1; }
+    .file-badge {
+      display: flex; align-items: center; gap: 4px; padding: 3px 10px;
+      border-radius: 20px; font-size: 11px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.4px; flex-shrink: 0;
+    }
+    .file-badge.pdf { background: #fee2e2; color: #dc2626; }
+    .file-badge.zip { background: #e0f2fe; color: #0284c7; }
+    .card-desc {
+      font-size: 13px; color: #6b7280; line-height: 1.6; margin-bottom: 16px;
+      display: -webkit-box; -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .card-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: 16px; border-top: 1px solid #f3f4f6;
+    }
+    .card-meta { display: flex; flex-direction: column; gap: 3px; }
+    .card-author { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: #374151; }
+    .author-avatar {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: linear-gradient(135deg, #1E3A8A, #2563EB);
+      color: white; font-size: 10px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .card-date { font-size: 11px; color: #9ca3af; }
+    .cat-chip { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; text-transform: capitalize; }
+    .cat-chip.cat-web    { background: #eff6ff; color: #2563EB; }
+    .cat-chip.cat-ia     { background: #f5f3ff; color: #7C3AED; }
+    .cat-chip.cat-mobile { background: #ecfdf5; color: #059669; }
+    .cat-chip.cat-design { background: #fef2f2; color: #DC2626; }
+    .cat-chip.cat-data   { background: #fffbeb; color: #D97706; }
+    .dl-btn {
+      display: inline-flex; align-items: center; gap: 7px; padding: 8px 16px;
+      background: linear-gradient(135deg, #1E3A8A, #2563EB); color: white;
+      border: none; border-radius: 20px; font-size: 12px; font-weight: 600;
+      cursor: pointer; text-decoration: none; transition: all 0.2s;
+      margin-top: 14px; width: 100%; justify-content: center;
+    }
+    .dl-btn:hover {
+      background: linear-gradient(135deg, #1e40af, #1d4ed8);
+      box-shadow: 0 6px 16px rgba(37,99,235,0.3); transform: translateY(-1px);
+    }
+ 
+    /* LIST VIEW */
+    #projets-grid.list-view .projet-card { display: flex; align-items: stretch; }
+    #projets-grid.list-view .card-banner { width: 6px; height: auto; min-height: 120px; }
+    #projets-grid.list-view .card-body { flex: 1; display: flex; align-items: center; gap: 20px; padding: 16px 24px; }
+    #projets-grid.list-view .card-main { flex: 1; }
+    #projets-grid.list-view .card-header-row { margin-bottom: 6px; }
+    #projets-grid.list-view .card-desc { margin-bottom: 0; -webkit-line-clamp: 2; }
+    #projets-grid.list-view .card-footer { border-top: none; padding-top: 0; flex-direction: column; align-items: flex-end; gap: 8px; min-width: 160px; }
+    #projets-grid.list-view .dl-btn { margin-top: 0; width: auto; }
+ 
+    /* STATE BOXES */
+    .state-box { grid-column: 1/-1; text-align: center; padding: 80px 20px; }
+    .state-box .state-icon { font-size: 52px; margin-bottom: 16px; opacity: 0.4; }
+    .state-box h3 { font-size: 20px; color: #374151; margin-bottom: 8px; }
+    .state-box p  { font-size: 14px; color: #9ca3af; }
+    .loader {
+      width: 44px; height: 44px; border: 3px solid #e5e7eb;
+      border-top-color: #2563EB; border-radius: 50%;
+      animation: spin 0.7s linear infinite; margin: 0 auto 20px;
+    }
+ 
+    /* PAGINATION */
+    .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 48px; }
+    .page-btn {
+      width: 38px; height: 38px; border-radius: 12px; border: 1.5px solid #e5e7eb;
+      background: white; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 13px; font-weight: 500; color: #4b5563; transition: all 0.2s;
+    }
+    .page-btn:hover, .page-btn.active {
+      background: linear-gradient(135deg, #1E3A8A, #2563EB);
+      border-color: transparent; color: white; box-shadow: 0 4px 10px rgba(37,99,235,0.3);
+    }
+    .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+ 
+    /* ANIMATIONS */
+    @keyframes fadeInDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeInUp   { from{opacity:0;transform:translateY(20px)}  to{opacity:1;transform:translateY(0)} }
+    @keyframes spin       { to{transform:rotate(360deg)} }
+ 
+    @media (max-width: 768px) {
+      .glass-header { padding: 0 20px; }
+      .hero { padding: 40px 20px 60px; }
+      .hero-stats { gap: 24px; }
+      .content-area { padding: 28px 16px 40px; }
+      .filter-row { flex-direction: column; align-items: flex-start; }
+      #projets-grid.list-view .projet-card { flex-direction: column; }
+      #projets-grid.list-view .card-banner { width: auto; height: 6px; min-height: unset; }
+      #projets-grid.list-view .card-body { flex-direction: column; align-items: flex-start; }
+      #projets-grid.list-view .card-footer { align-items: flex-start; border-top: 1px solid #f3f4f6; padding-top: 12px; }
+    }
+  </style>
+</head>
+<body>
+ 
+  <header class="glass-header">
+    <div class="logo-area" onclick="window.location.href='../auth/choice.html'">
+      <div class="logo-icon"><i class="fas fa-share-nodes"></i></div>
+      <span class="logo-text">WisShare</span>
+    </div>
+    <nav class="nav-links">
+      <a href="accueil.html" class="active"><i class="fas fa-compass"></i> Explorer</a>
+      <a href="../depot/depot.html"><i class="fas fa-cloud-arrow-up"></i> Déposer</a>
+      <div id="navUser"></div>
+    </nav>
+  </header>
+ 
+  <section class="hero">
+    <div class="hero-badge"><i class="fas fa-star"></i> Bibliothèque de projets étudiants</div>
+    <h1>Explorez &amp; Inspirez-vous</h1>
+    <p>Découvrez des projets de qualité déposés par la communauté étudiante.</p>
+    <div class="search-bar-wrap" id="searchWrap">
+      <i class="fas fa-search search-icon"></i>
+      <input type="text" id="searchInput" placeholder="Rechercher un projet, une technologie…" autocomplete="off"/>
+      <button class="clear-btn" id="clearBtn" onclick="clearSearch()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item"><div class="stat-num" id="statTotal">—</div><div class="stat-label">Projets</div></div>
+      <div class="stat-item"><div class="stat-num" id="statAuthors">—</div><div class="stat-label">Auteurs</div></div>
+      <div class="stat-item"><div class="stat-num" id="statCats">5</div><div class="stat-label">Catégories</div></div>
+    </div>
+  </section>
+ 
+  <main class="content-area">
+    <div class="filter-row">
+      <div class="category-pills" id="categoryPills">
+        <div class="pill active" data-cat="all"    onclick="filterCat(this,'all')">   <i class="fas fa-layer-group"></i> Tous   <span class="pill-count" id="cnt-all">0</span></div>
+        <div class="pill"        data-cat="web"    onclick="filterCat(this,'web')">   <i class="fas fa-globe"></i> Web         <span class="pill-count" id="cnt-web">0</span></div>
+        <div class="pill"        data-cat="ia"     onclick="filterCat(this,'ia')">    <i class="fas fa-robot"></i> IA          <span class="pill-count" id="cnt-ia">0</span></div>
+        <div class="pill"        data-cat="mobile" onclick="filterCat(this,'mobile')"><i class="fas fa-mobile-alt"></i> Mobile  <span class="pill-count" id="cnt-mobile">0</span></div>
+        <div class="pill"        data-cat="design" onclick="filterCat(this,'design')"><i class="fas fa-pen-nib"></i> Design      <span class="pill-count" id="cnt-design">0</span></div>
+        <div class="pill"        data-cat="data"   onclick="filterCat(this,'data')">  <i class="fas fa-chart-bar"></i> Data    <span class="pill-count" id="cnt-data">0</span></div>
+      </div>
+      <select class="sort-select" id="sortSelect" onchange="applyFilters()">
+        <option value="date_desc">Plus récents</option>
+        <option value="date_asc">Plus anciens</option>
+        <option value="title_asc">A → Z</option>
+        <option value="title_desc">Z → A</option>
+      </select>
+    </div>
+ 
+    <div class="results-bar">
+      <div class="results-count" id="resultsCount">Chargement…</div>
+      <div class="view-toggle">
+        <div class="view-btn active" id="gridBtn" onclick="setView('grid')" title="Grille"><i class="fas fa-th-large"></i></div>
+        <div class="view-btn"        id="listBtn" onclick="setView('list')" title="Liste"><i class="fas fa-list"></i></div>
+      </div>
+    </div>
+ 
+    <div id="projets-grid">
+      <div class="state-box">
+        <div class="loader"></div>
+        <h3>Chargement des projets…</h3>
+        <p>Récupération depuis la base de données</p>
+      </div>
+    </div>
+ 
+    <div class="pagination" id="pagination"></div>
+  </main>
+ 
+<script>
+  const API_BASE  = '/Wisshare/backend/';
+  const PER_PAGE  = 12;
+  let allProjets  = [], filtered = [], currentCat = 'all', currentPage = 1;
+ 
+  document.addEventListener('DOMContentLoaded', () => {
+    checkSession();
+    loadProjets();
+    const inp = document.getElementById('searchInput');
+    inp.addEventListener('input', () => {
+      document.getElementById('searchWrap').classList.toggle('has-value', inp.value.length > 0);
+      applyFilters();
+    });
+  });
+ 
+  async function checkSession() {
+    try {
+      const res  = await fetch(`${API_BASE}auth/session.php`, { credentials:'include' });
+      const data = await res.json();
+      const nav  = document.getElementById('navUser');
+      if (data.connecte) {
+        nav.innerHTML = `<div class="user-badge"><i class="fas fa-user-circle"></i> ${data.nom}
+          <a href="${API_BASE}auth/logout.php" style="color:#e53e3e;margin-left:4px;font-size:12px;"><i class="fas fa-sign-out-alt"></i></a></div>`;
+      } else {
+        nav.innerHTML = `<a href="../auth/login.html"><i class="fas fa-user-circle"></i> Connexion</a>`;
+      }
+    } catch(e) {
+      document.getElementById('navUser').innerHTML = `<a href="../auth/login.html"><i class="fas fa-user-circle"></i> Connexion</a>`;
+    }
+  }
+ 
+  async function loadProjets() {
+    try {
+      const res  = await fetch(`${API_BASE}projets/list.php`, { credentials:'include' });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message);
+      allProjets = data.projets;
+      updateCounts(); updateStats(); applyFilters();
+    } catch(err) {
+      document.getElementById('projets-grid').innerHTML = `
+        <div class="state-box">
+          <div class="state-icon"><i class="fas fa-exclamation-triangle"></i></div>
+          <h3>Impossible de charger les projets</h3><p>${err.message}</p>
+        </div>`;
+      document.getElementById('resultsCount').textContent = '';
+    }
+  }
+ 
+  function updateCounts() {
+    document.getElementById('cnt-all').textContent = allProjets.length;
+    ['web','ia','mobile','design','data'].forEach(c => {
+      const el = document.getElementById(`cnt-${c}`);
+      if (el) el.textContent = allProjets.filter(p => p.categorie === c).length;
+    });
+  }
+ 
+  function updateStats() {
+    const uniqueAuthors = new Set(allProjets.map(p => p.auteur)).size;
+    animateCount('statTotal',   allProjets.length);
+    animateCount('statAuthors', uniqueAuthors);
+  }
+ 
+  function animateCount(id, target) {
+    const el = document.getElementById(id);
+    let cur = 0;
+    const step  = Math.ceil(target / 30);
+    const timer = setInterval(() => {
+      cur = Math.min(cur + step, target);
+      el.textContent = cur;
+      if (cur >= target) clearInterval(timer);
+    }, 30);
+  }
+ 
+  function filterCat(el, cat) {
+    document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    currentCat = cat; currentPage = 1; applyFilters();
+  }
+ 
+  function applyFilters() {
+    const query = document.getElementById('searchInput').value.toLowerCase().trim();
+    const sort  = document.getElementById('sortSelect').value;
+    filtered = allProjets.filter(p => {
+      const matchCat    = currentCat === 'all' || p.categorie === currentCat;
+      const matchSearch = !query ||
+        p.titre.toLowerCase().includes(query) ||
+        (p.description||'').toLowerCase().includes(query) ||
+        (p.auteur||'').toLowerCase().includes(query);
+      return matchCat && matchSearch;
+    });
+    filtered.sort((a,b) => {
+      if (sort==='date_desc') return new Date(b.date_depot)-new Date(a.date_depot);
+      if (sort==='date_asc')  return new Date(a.date_depot)-new Date(b.date_depot);
+      if (sort==='title_asc') return a.titre.localeCompare(b.titre);
+      if (sort==='title_desc')return b.titre.localeCompare(a.titre);
+      return 0;
+    });
+    renderPage(); renderPagination(); updateResultsCount();
+  }
+ 
+  function renderPage() {
+    const grid  = document.getElementById('projets-grid');
+    const start = (currentPage-1) * PER_PAGE;
+    const page  = filtered.slice(start, start+PER_PAGE);
+    if (!page.length) {
+      grid.innerHTML = `<div class="state-box"><div class="state-icon"><i class="fas fa-search"></i></div><h3>Aucun projet trouvé</h3><p>Essayez une autre catégorie ou modifiez votre recherche.</p></div>`;
+      return;
+    }
+    grid.innerHTML = page.map((p,i) => cardHTML(p,i)).join('');
+  }
+ 
+  function cardHTML(p, index) {
+    const cat      = (p.categorie||'web').toLowerCase();
+    const type     = (p.type_fichier||'pdf').toLowerCase();
+    const date     = p.date_depot ? new Date(p.date_depot).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'}) : '';
+    const initials = (p.auteur||'A').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+    const delay    = (index % PER_PAGE) * 0.04;
+    const cats     = {web:'Web',ia:'IA',mobile:'Mobile',design:'Design',data:'Data Science'};
+    const dlURL    = `${API_BASE}projets/download.php?id=${p.id}`;
+    return `
+      <div class="projet-card" style="animation-delay:${delay}s">
+        <div class="card-banner cat-${cat}"></div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <div class="card-title">${esc(p.titre)}</div>
+            <div class="file-badge ${type}"><i class="fas fa-${type==='pdf'?'file-pdf':'file-archive'}"></i> ${type.toUpperCase()}</div>
+          </div>
+          <div class="card-desc">${esc(p.description||'')}</div>
+          <div class="card-footer">
+            <div class="card-meta">
+              <div class="card-author"><div class="author-avatar">${initials}</div>${esc(p.auteur||'Anonyme')}</div>
+              <div class="card-date"><i class="fas fa-calendar-alt" style="margin-right:4px;opacity:0.6"></i>${date}</div>
+            </div>
+            <span class="cat-chip cat-${cat}">${cats[cat]||cat}</span>
+          </div>
+          <a class="dl-btn" href="${dlURL}"><i class="fas fa-download"></i> Télécharger</a>
+        </div>
+      </div>`;
+  }
+ 
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+ 
+  function renderPagination() {
+    const total = Math.ceil(filtered.length / PER_PAGE);
+    const pag   = document.getElementById('pagination');
+    if (total <= 1) { pag.innerHTML=''; return; }
+    let html = `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}><i class="fas fa-chevron-left"></i></button>`;
+    for (let i=1; i<=total; i++) {
+      if (i===1||i===total||Math.abs(i-currentPage)<=1)
+        html+=`<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+      else if (Math.abs(i-currentPage)===2)
+        html+=`<button class="page-btn" disabled>…</button>`;
+    }
+    html+=`<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===total?'disabled':''}><i class="fas fa-chevron-right"></i></button>`;
+    pag.innerHTML = html;
+  }
+ 
+  function goPage(n) {
+    const total = Math.ceil(filtered.length/PER_PAGE);
+    if (n<1||n>total) return;
+    currentPage = n; renderPage(); renderPagination();
+    window.scrollTo({top:400,behavior:'smooth'});
+  }
+ 
+  function updateResultsCount() {
+    const el    = document.getElementById('resultsCount');
+    const start = (currentPage-1)*PER_PAGE+1;
+    const end   = Math.min(currentPage*PER_PAGE, filtered.length);
+    el.innerHTML = filtered.length
+      ? `Affichage <strong>${start}–${end}</strong> sur <strong>${filtered.length}</strong> projet${filtered.length>1?'s':''}`
+      : '<strong>0</strong> projet trouvé';
+  }
+ 
+  function setView(v) {
+    document.getElementById('projets-grid').classList.toggle('list-view', v==='list');
+    document.getElementById('gridBtn').classList.toggle('active', v==='grid');
+    document.getElementById('listBtn').classList.toggle('active', v==='list');
+  }
+ 
+  function clearSearch() {
+    const inp = document.getElementById('searchInput');
+    inp.value = ''; document.getElementById('searchWrap').classList.remove('has-value');
+    applyFilters(); inp.focus();
+  }
+</script>
+</body>
+</html>

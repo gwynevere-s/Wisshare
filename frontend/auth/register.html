@@ -411,7 +411,7 @@
       }
 
       try {
-        const response = await fetch('../../backend/auth/register.php', {
+        const response = await fetch('http://localhost/Wisshare/backend/auth/register.php', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ nom, email, mot_de_passe: password })
